@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CarShared Pro - Gestione Smart Auto</title>
+    <style>
+        :root {
+            --primary-color: #2563eb;
+            --primary-hover: #1d4ed8;
+            --secondary-color: #64748b;
+            --bg-color: #f1f5f9;
+            --card-bg: #ffffff;
+            --text-color: #1e293b;
+            --border-color: #e2e8f0;
+            --success-color: #10b981;
+            --error-color: #ef4444;
+            --pending-color: #f59e0b; /* Arancio per non approvato */
+            --approved-color: #2563eb; /* Blu per approvato */
+            --selection-color: #dbeafe;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.5;
+            user-select: none;
+        }
+
+        header {
+            background: linear-gradient(135deg, var(--primary-color), #3b82f6);
+            color: white;
+            padding: 2rem 1rem;
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
+        }
+
+        nav {
+            display: flex;
+            background: var(--card-bg);
+            border-bottom: 1px solid var(--border-color);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        nav button {
+            flex: 1;
+            padding: 1.25rem;
+            border: none;
+            background: none;
+            cursor: pointer;
+            font-weight: 700;
+            color: var(--secondary-color);
+            border-bottom: 4px solid transparent;
+            transition: all 0.2s;
+        }
+
+        nav button.active {
+            color: var(--primary-color);
+            border-bottom-color: var(--primary-color);
+        }
+
+        main {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 1rem;
+        }
+
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+            margin-bottom: 1.5rem;
+        }
+
+        h2 { margin-bottom: 1.5rem; color: var(--text-color); font-size: 1.25rem; }
+
+        /* Multi-month Calendar */
+        .months-container {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+
+        .month-view {
+            animation: fadeIn 0.4s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .month-title {
+            font-weight: 800;
+            text-transform: capitalize;
+            margin-bottom: 1rem;
+            color: var(--primary-color);
+            font-size: 1.1rem;
+            padding-left: 0.5rem;
+        }
+
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 4px;
+        }
+
+        .day-head {
+            text-align: center;
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: var(--secondary-color);
+            padding: 0.5rem 0;
+        }
+
+        .day {
+            aspect-ratio: 1;
+            background: #fff;
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            position: relative;
+            transition: all 0.15s;
+            font-weight: 600;
+        }
+
+        .day.empty { visibility: hidden; pointer-events: none; }
+        
+        .day:hover:not(.booked):not(.selecting) { background: #f8fafc; }
+
+        .day.today { border: 2px solid var(--primary-color); color: var(--primary-color); }
+
+        /* Booking States */
+        .day.booked-pending { background-color: #fef3c7; border-color: #f59e0b; color: #92400e; }
+        .day.booked-approved { background-color: #dbeafe; border-color: #3b82f6; color: #1e40af; }
+
+        /* Selection States */
+        .day.selecting { background-color: var(--selection-color); border-color: var(--primary-color); }
+        .day.selection-start, .day.selection-end { 
+            background-color: var(--primary-color) !important; 
+            color: white !important; 
+            z-index: 2;
+        }
+
+        .day-num { font-size: 1rem; }
+        .day-info { font-size: 0.6rem; opacity: 0.8; text-align: center; }
+
+        /* Legend */
+        .legend {
+            display: flex;
+            gap: 1.5rem;
+            flex-wrap: wrap;
+            margin-top: 1rem;
+            font-size: 0.85rem;
+        }
+        .legend-item { display: flex; align-items: center; gap: 0.5rem; }
+        .dot { width: 12px; height: 12px; border-radius: 3px; }
+
+        /* Expenses Styling (simplified but clean) */
+        .expense-form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+        @media (max-width: 600px) { .expense-form-grid { grid-template-columns: 1fr; } }
+
+        .form-group { margin-bottom: 1.25rem; }
+        label { display: block; margin-bottom: 0.5rem; font-weight: 600; font-size: 0.9rem; }
+        input, select {
+            width: 100%;
+            padding: 0.8rem;
+            border: 2px solid var(--border-color);
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: border-color 0.2s;
+        }
+        input:focus { border-color: var(--primary-color); outline: none; }
+
+        .btn {
+            padding: 1rem;
+            border-radius: 12px;
+            border: none;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+            width: 100%;
+        }
+        .btn-primary { background: var(--primary-color); color: white; }
+        .btn-primary:active { transform: scale(0.98); }
+
+        /* Notifications */
+        #notif-box {
+            position: fixed;
+            top: 1.5rem;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 1000;
+            pointer-events: none;
+        }
+        .toast {
+            background: #1e293b;
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 50px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            font-size: 0.9rem;
+            animation: slideDown 0.3s ease forwards;
+        }
+        @keyframes slideDown {
+            from { transform: translateY(-50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        /* Responsive refinements */
+        @media (max-width: 480px) {
+            .day-num { font-size: 0.9rem; }
+            .day-head { font-size: 0.65rem; }
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>🚗 CarShared Pro</h1>
+    <p>Tocca i giorni per prenotare</p>
+</header>
+
+<nav>
+    <button id="nav-cal" class="active" onclick="switchTab('calendar')">Prenotazioni</button>
+    <button id="nav-exp" onclick="switchTab('expenses')">Spese</button>
+</nav>
+
+<main>
+    <!-- TAB CALENDARIO -->
+    <section id="tab-calendar" class="tab-content active">
+        <div class="card">
+            <div id="calendar-container" class="months-container">
+                <!-- Rendered by JS -->
+            </div>
+            
+            <div class="legend">
+                <div class="legend-item"><div class="dot" style="background: #2563eb;"></div> Approvato</div>
+                <div class="legend-item"><div class="dot" style="background: #f59e0b;"></div> In Attesa</div>
+                <div class="legend-item"><div class="dot" style="border: 2px solid #2563eb;"></div> Oggi</div>
+            </div>
+        </div>
+
+        <div id="selection-bar" class="card" style="display: none; position: sticky; bottom: 1rem; z-index: 90; border: 2px solid var(--primary-color);">
+            <div style="display: flex; justify-content: space-between; align-items: center; gap: 1rem;">
+                <div>
+                    <span id="sel-info" style="font-weight: 800; font-size: 0.9rem;">Seleziona periodo...</span>
+                </div>
+                <div style="display: flex; gap: 0.5rem;">
+                    <button class="btn" style="background: #e2e8f0; width: auto; padding: 0.6rem 1rem;" onclick="resetSelection()">Annulla</button>
+                    <button class="btn btn-primary" style="width: auto; padding: 0.6rem 1rem;" onclick="openBookingForm()">Prenota</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- TAB SPESE -->
+    <section id="tab-expenses" class="tab-content">
+        <div class="card">
+            <h2>Nuova Spesa</h2>
+            <form id="exp-form">
+                <div class="expense-form-grid">
+                    <div class="form-group">
+                        <label>Cosa hai comprato?</label>
+                        <input type="text" id="exp-desc" placeholder="es. Pieno Benzina" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Quanto hai speso (€)?</label>
+                        <input type="number" id="exp-amount" step="0.01" required>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary">Salva Spesa</button>
+            </form>
+        </div>
+
+        <div class="card">
+            <h2>Ultime Spese</h2>
+            <div id="expenses-list">
+                <!-- JS -->
+            </div>
+        </div>
+    </section>
+</main>
+
+<!-- MODAL PRENOTAZIONE -->
+<div id="booking-modal" style="display: none; position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); z-index:200; align-items:center; justify-content:center;">
+    <div class="card" style="width: 90%; max-width: 400px; margin: 0;">
+        <h2 id="modal-title">Conferma Prenotazione</h2>
+        <div class="form-group">
+            <label>Chi prenota?</label>
+            <select id="book-user">
+                <option value="Luca">Luca</option>
+                <option value="Sara">Sara</option>
+                <option value="Marco">Marco</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label>Note</label>
+            <input type="text" id="book-note" placeholder="es. Viaggio lavoro">
+        </div>
+        <div style="display: flex; gap: 1rem;">
+            <button class="btn" style="background: #e2e8f0;" onclick="closeModal()">Esci</button>
+            <button class="btn btn-primary" onclick="saveBooking()">Conferma</button>
+        </div>
+    </div>
+</div>
+
+<div id="notif-box"></div>
+
+<script>
+    // --- STATE ---
+    let bookings = JSON.parse(localStorage.getItem('cs_bookings')) || [];
+    let expenses = JSON.parse(localStorage.getItem('cs_expenses')) || [];
+    let tempStart = null;
+    let tempEnd = null;
+
+    // --- UTILS ---
+    const save = () => {
+        localStorage.setItem('cs_bookings', JSON.stringify(bookings));
+        localStorage.setItem('cs_expenses', JSON.stringify(expenses));
+    };
+
+    function notify(msg) {
+        const box = document.getElementById('notif-box');
+        const t = document.createElement('div');
+        t.className = 'toast';
+        t.innerText = msg;
+        box.appendChild(t);
+        setTimeout(() => t.remove(), 2500);
+    }
+
+    // --- TAB SYSTEM ---
+    function switchTab(tab) {
+        document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+        document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
+        document.getElementById('tab-' + tab).classList.add('active');
+        document.getElementById('nav-' + (tab === 'calendar' ? 'cal' : 'exp')).classList.add('active');
+        if(tab === 'calendar') { renderCalendar(); resetSelection(); }
+        else renderExpenses();
+    }
+
+    // --- CALENDAR ENGINE ---
+    function renderCalendar() {
+        const container = document.getElementById('calendar-container');
+        container.innerHTML = '';
+        
+        const now = new Date();
+        for (let i = 0; i < 3; i++) {
+            const date = new Date(now.getFullYear(), now.getMonth() + i, 1);
+            container.appendChild(createMonthElement(date));
+        }
+    }
+
+    function createMonthElement(date) {
+        const wrapper = document.createElement('div');
+        wrapper.className = 'month-view';
+        
+        const monthName = new Intl.DateTimeFormat('it-IT', { month: 'long', year: 'numeric' }).format(date);
+        wrapper.innerHTML = `<div class="month-title">${monthName}</div>`;
+        
+        const grid = document.createElement('div');
+        grid.className = 'calendar-grid';
+        
+        ['L','M','M','G','V','S','D'].forEach(d => {
+            grid.innerHTML += `<div class="day-head">${d}</div>`;
+        });
+
+        const year = date.getFullYear();
+        const month = date.getMonth();
+        let firstDay = new Date(year, month, 1).getDay();
+        firstDay = firstDay === 0 ? 6 : firstDay - 1;
+        const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+        for (let i = 0; i < firstDay; i++) grid.innerHTML += `<div class="day empty"></div>`;
+
+        const todayStr = new Date().toISOString().split('T')[0];
+
+        for (let d = 1; d <= daysInMonth; d++) {
+            const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+            const booking = bookings.find(b => dateStr >= b.startDate && dateStr <= b.endDate);
+            
+            const dayEl = document.createElement('div');
+            dayEl.className = 'day';
+            dayEl.dataset.date = dateStr;
+            
+            if (dateStr === todayStr) dayEl.classList.add('today');
+            if (booking) {
+                dayEl.classList.add(booking.approved ? 'booked-approved' : 'booked-pending');
+                dayEl.innerHTML = `<span class="day-num">${d}</span><span class="day-info">${booking.user}</span>`;
+                dayEl.onclick = () => handleBookingClick(booking);
+            } else {
+                dayEl.innerHTML = `<span class="day-num">${d}</span>`;
+                dayEl.onclick = () => handleDayClick(dateStr);
+            }
+            
+            grid.appendChild(dayEl);
+        }
+        
+        wrapper.appendChild(grid);
+        return wrapper;
+    }
+
+    // --- SMART SELECTION LOGIC ---
+    function handleDayClick(date) {
+        if (!tempStart || (tempStart && tempEnd)) {
+            tempStart = date;
+            tempEnd = null;
+            notify("📍 Inizio: " + formatDate(date) + ". Ora tocca la fine.");
+        } else {
+            if (date < tempStart) {
+                tempStart = date;
+                notify("📍 Data inizio spostata a: " + formatDate(date));
+            } else {
+                // Controllo se ci sono prenotazioni nel mezzo
+                if (isRangeOccupied(tempStart, date)) {
+                    notify("❌ Periodo non disponibile (ci sono altre prenotazioni)");
+                    return;
+                }
+                tempEnd = date;
+                notify("✅ Periodo selezionato. Conferma ora.");
+            }
+        }
+        updateSelectionUI();
+    }
+
+    function isRangeOccupied(start, end) {
+        return bookings.some(b => start <= b.endDate && end >= b.startDate);
+    }
+
+    function updateSelectionUI() {
+        const allDays = document.querySelectorAll('.day:not(.empty)');
+        const bar = document.getElementById('selection-bar');
+        const info = document.getElementById('sel-info');
+
+        allDays.forEach(el => {
+            const d = el.dataset.date;
+            el.classList.remove('selecting', 'selection-start', 'selection-end');
+            
+            if (tempStart && d === tempStart) el.classList.add('selection-start');
+            if (tempEnd && d === tempEnd) el.classList.add('selection-end');
+            if (tempStart && tempEnd && d > tempStart && d < tempEnd) el.classList.add('selecting');
+        });
+
+        if (tempStart) {
+            bar.style.display = 'block';
+            info.innerText = tempEnd 
+                ? `${formatDate(tempStart)} ➔ ${formatDate(tempEnd)}`
+                : `Inizio: ${formatDate(tempStart)}...`;
+        } else {
+            bar.style.display = 'none';
+        }
+    }
+
+    function resetSelection() {
+        tempStart = null;
+        tempEnd = null;
+        updateSelectionUI();
+    }
+
+    function formatDate(iso) {
+        const d = new Date(iso);
+        return d.toLocaleDateString('it-IT', { day:'numeric', month:'short' });
+    }
+
+    // --- BOOKING WORKFLOW ---
+    function openBookingForm() {
+        if (!tempStart || !tempEnd) {
+            notify("⚠️ Seleziona prima una data di fine");
+            return;
+        }
+        document.getElementById('booking-modal').style.display = 'flex';
+    }
+
+    function closeModal() {
+        document.getElementById('booking-modal').style.display = 'none';
+    }
+
+    function saveBooking() {
+        const user = document.getElementById('book-user').value;
+        const note = document.getElementById('book-note').value;
+        
+        bookings.push({
+            id: Date.now(),
+            startDate: tempStart,
+            endDate: tempEnd,
+            user: user,
+            note: note,
+            approved: false // Default non approvato
+        });
+        
+        save();
+        closeModal();
+        resetSelection();
+        renderCalendar();
+        notify("📩 Richiesta inviata! In attesa di approvazione.");
+    }
+
+    function handleBookingClick(booking) {
+        if (!booking.approved) {
+            if (confirm(`Vuoi approvare la prenotazione di ${booking.user}?`)) {
+                booking.approved = true;
+                save();
+                renderCalendar();
+                notify("✅ Prenotazione approvata!");
+            }
+        } else {
+            notify(`🚗 Auto prenotata da ${booking.user}`);
+        }
+    }
+
+    // --- EXPENSES ---
+    document.getElementById('exp-form').onsubmit = function(e) {
+        e.preventDefault();
+        const d = document.getElementById('exp-desc').value;
+        const a = parseFloat(document.getElementById('exp-amount').value);
+        expenses.push({ id: Date.now(), desc: d, amount: a, date: new Date().toLocaleDateString('it-IT') });
+        save();
+        this.reset();
+        renderExpenses();
+        notify("💰 Spesa salvata!");
+    };
+
+    function renderExpenses() {
+        const list = document.getElementById('expenses-list');
+        list.innerHTML = '';
+        expenses.slice().reverse().forEach(ex => {
+            list.innerHTML += `
+                <div style="display:flex; justify-content:space-between; padding: 1rem 0; border-bottom: 1px solid #eee;">
+                    <div>
+                        <div style="font-weight:700">${ex.desc}</div>
+                        <div style="font-size:0.8rem; color:#64748b">${ex.date}</div>
+                    </div>
+                    <div style="font-weight:800; color:var(--error-color)">€${ex.amount.toFixed(2)}</div>
+                </div>
+            `;
+        });
+    }
+
+    // INIT
+    renderCalendar();
+</script>
+
+</body>
+</html>
