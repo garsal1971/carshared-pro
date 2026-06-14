@@ -6,354 +6,241 @@
     <title>La Nostra Macchina 🚗</title>
     <style>
         :root {
-            --primary-color: #2563eb;
-            --primary-hover: #1d4ed8;
-            --secondary-color: #64748b;
-            --bg-color: #f1f5f9;
-            --card-bg: #ffffff;
-            --text-color: #1e293b;
-            --border-color: #e2e8f0;
-            --success-color: #10b981;
-            --error-color: #ef4444;
-            --pending-color: #f59e0b;
-            --approved-color: #2563eb;
-            --selection-color: #dbeafe;
+            --primary: #2563eb;
+            --bg: #f1f5f9;
+            --card: #ffffff;
+            --text: #1e293b;
+            --border: #e2e8f0;
+            --muted: #64748b;
+            --green: #059669;
+            --red: #ef4444;
+            --orange: #f59e0b;
         }
+        * { box-sizing:border-box; margin:0; padding:0; font-family:'Segoe UI',system-ui,sans-serif; -webkit-tap-highlight-color:transparent; }
+        body { background:var(--bg); color:var(--text); line-height:1.5; user-select:none; }
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-            -webkit-tap-highlight-color: transparent;
-        }
+        header { background:linear-gradient(135deg,#2563eb,#3b82f6); color:white; padding:1.5rem 1rem; text-align:center; box-shadow:0 4px 12px rgba(37,99,235,.2); }
+        header h1 { font-size:1.5rem; }
+        header p  { font-size:.9rem; opacity:.85; margin-top:.25rem; }
 
-        body {
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            line-height: 1.5;
-            user-select: none;
-        }
+        nav { display:flex; background:var(--card); border-bottom:1px solid var(--border); position:sticky; top:0; z-index:100; }
+        nav button { flex:1; padding:1.1rem; border:none; background:none; cursor:pointer; font-weight:700; color:var(--muted); border-bottom:4px solid transparent; transition:all .2s; font-size:.95rem; }
+        nav button.active { color:var(--primary); border-bottom-color:var(--primary); }
 
-        header {
-            background: linear-gradient(135deg, var(--primary-color), #3b82f6);
-            color: white;
-            padding: 2rem 1rem;
-            text-align: center;
-            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
-        }
+        main { max-width:900px; margin:0 auto; padding:1rem; }
+        .tab-content { display:none; }
+        .tab-content.active { display:block; }
 
-        nav {
-            display: flex;
-            background: var(--card-bg);
-            border-bottom: 1px solid var(--border-color);
-            position: sticky;
-            top: 0;
-            z-index: 100;
-        }
+        .card { background:var(--card); border-radius:16px; padding:1.5rem; box-shadow:0 2px 8px rgba(0,0,0,.06); margin-bottom:1.25rem; }
+        h2 { margin-bottom:1.25rem; font-size:1.1rem; }
 
-        nav button {
-            flex: 1;
-            padding: 1.25rem;
-            border: none;
-            background: none;
-            cursor: pointer;
-            font-weight: 700;
-            color: var(--secondary-color);
-            border-bottom: 4px solid transparent;
-            transition: all 0.2s;
-        }
+        /* CONTO SALDO */
+        .saldo-principale { text-align:center; padding:1.25rem; border-radius:14px; margin-bottom:1.25rem; }
+        .saldo-principale .importo { font-size:2.2rem; font-weight:900; }
+        .saldo-principale .label   { font-size:.85rem; opacity:.75; margin-top:.2rem; }
 
-        nav button.active {
-            color: var(--primary-color);
-            border-bottom-color: var(--primary-color);
-        }
+        .quota-row { display:flex; align-items:center; gap:1rem; padding:.75rem 0; border-bottom:1px solid var(--border); }
+        .quota-row:last-child { border-bottom:none; }
+        .quota-name { font-weight:700; min-width:90px; }
+        .quota-bar-wrap { flex:1; background:#e2e8f0; border-radius:50px; height:10px; overflow:hidden; }
+        .quota-bar { height:100%; border-radius:50px; transition:width .6s ease; }
+        .quota-nums { font-size:.85rem; text-align:right; min-width:110px; }
+        .badge { display:inline-block; padding:.15rem .5rem; border-radius:50px; font-size:.75rem; font-weight:700; }
 
-        main {
-            max-width: 1000px;
-            margin: 0 auto;
-            padding: 1rem;
-        }
+        /* FORMS */
+        .form-row { display:grid; grid-template-columns:1fr 1fr; gap:1rem; }
+        @media(max-width:560px) { .form-row { grid-template-columns:1fr; } }
+        .form-row-3 { display:grid; grid-template-columns:1fr 1fr 1fr; gap:1rem; }
+        @media(max-width:700px) { .form-row-3 { grid-template-columns:1fr 1fr; } }
+        @media(max-width:480px) { .form-row-3 { grid-template-columns:1fr; } }
 
-        .tab-content { display: none; }
-        .tab-content.active { display: block; }
+        .form-group { margin-bottom:1rem; }
+        label { display:block; margin-bottom:.4rem; font-weight:600; font-size:.88rem; }
+        input, select { width:100%; padding:.75rem; border:2px solid var(--border); border-radius:10px; font-size:1rem; transition:border-color .2s; }
+        input:focus, select:focus { border-color:var(--primary); outline:none; }
 
-        .card {
-            background: var(--card-bg);
-            border-radius: 16px;
-            padding: 1.5rem;
-            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
-            margin-bottom: 1.5rem;
-        }
+        .btn { padding:.85rem 1rem; border-radius:12px; border:none; font-weight:700; cursor:pointer; transition:all .2s; width:100%; font-size:.95rem; }
+        .btn:active { transform:scale(.98); }
+        .btn-primary { background:var(--primary); color:white; }
+        .btn-green   { background:#16a34a; color:white; }
+        .btn-gray    { background:#e2e8f0; color:var(--text); }
 
-        h2 { margin-bottom: 1.5rem; color: var(--text-color); font-size: 1.25rem; }
+        .btn-vers { flex:1; padding:.85rem; border-radius:12px; border:none; font-weight:700; cursor:pointer; font-size:.9rem; transition:all .2s; }
+        .btn-vers:active { transform:scale(.97); }
 
-        .months-container { display: flex; flex-direction: column; gap: 2rem; }
-        .month-view { animation: fadeIn 0.4s ease; }
+        /* STORICO */
+        .mov-row { display:flex; justify-content:space-between; align-items:center; padding:.85rem 0; border-bottom:1px solid #f1f5f9; }
+        .mov-row:last-child { border-bottom:none; }
+        .mov-icon { font-size:1.3rem; margin-right:.6rem; }
+        .mov-label { font-weight:700; font-size:.95rem; }
+        .mov-sub   { font-size:.78rem; color:var(--muted); }
+        .mov-amount { font-weight:800; font-size:1rem; white-space:nowrap; }
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
+        /* CALENDAR */
+        .months-container { display:flex; flex-direction:column; gap:2rem; }
+        .month-view { animation:fadeIn .4s ease; }
+        @keyframes fadeIn { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
+        .month-title { font-weight:800; text-transform:capitalize; margin-bottom:.75rem; color:var(--primary); font-size:1rem; }
+        .calendar-grid { display:grid; grid-template-columns:repeat(7,1fr); gap:3px; }
+        .day-head { text-align:center; font-size:.7rem; font-weight:700; color:var(--muted); padding:.4rem 0; }
+        .day { aspect-ratio:1; background:#fff; border:1px solid var(--border); border-radius:9px; display:flex; flex-direction:column; align-items:center; justify-content:center; cursor:pointer; transition:all .15s; font-weight:600; }
+        .day.empty { visibility:hidden; pointer-events:none; }
+        .day:hover:not(.booked):not(.selecting) { background:#f8fafc; }
+        .day.today { border:2px solid var(--primary); color:var(--primary); }
+        .day.booked-pending  { background:#fef3c7; border-color:#f59e0b; color:#92400e; }
+        .day.booked-approved { background:#dbeafe; border-color:#3b82f6; color:#1e40af; }
+        .day.selecting { background:#dbeafe; border-color:var(--primary); }
+        .day.selection-start,.day.selection-end { background:var(--primary)!important; color:white!important; z-index:2; }
+        .day-num  { font-size:.95rem; }
+        .day-info { font-size:.58rem; opacity:.8; text-align:center; }
 
-        .month-title {
-            font-weight: 800;
-            text-transform: capitalize;
-            margin-bottom: 1rem;
-            color: var(--primary-color);
-            font-size: 1.1rem;
-            padding-left: 0.5rem;
-        }
+        .legend { display:flex; gap:1.25rem; flex-wrap:wrap; margin-top:.75rem; font-size:.82rem; }
+        .legend-item { display:flex; align-items:center; gap:.4rem; }
+        .dot { width:11px; height:11px; border-radius:3px; }
 
-        .calendar-grid {
-            display: grid;
-            grid-template-columns: repeat(7, 1fr);
-            gap: 4px;
-        }
+        #selection-bar { display:none; position:sticky; bottom:1rem; z-index:90; border:2px solid var(--primary); }
 
-        .day-head {
-            text-align: center;
-            font-size: 0.75rem;
-            font-weight: 700;
-            color: var(--secondary-color);
-            padding: 0.5rem 0;
-        }
+        /* NOTIFICATIONS */
+        #notif-box { position:fixed; top:1.25rem; left:50%; transform:translateX(-50%); z-index:1000; pointer-events:none; }
+        .toast { background:#1e293b; color:white; padding:.65rem 1.3rem; border-radius:50px; box-shadow:0 8px 20px rgba(0,0,0,.2); margin-bottom:.4rem; font-weight:600; font-size:.88rem; animation:slideDown .3s ease; white-space:nowrap; }
+        @keyframes slideDown { from{transform:translateY(-40px);opacity:0} to{transform:translateY(0);opacity:1} }
 
-        .day {
-            aspect-ratio: 1;
-            background: #fff;
-            border: 1px solid var(--border-color);
-            border-radius: 10px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            position: relative;
-            transition: all 0.15s;
-            font-weight: 600;
-        }
-
-        .day.empty { visibility: hidden; pointer-events: none; }
-        .day:hover:not(.booked):not(.selecting) { background: #f8fafc; }
-        .day.today { border: 2px solid var(--primary-color); color: var(--primary-color); }
-        .day.booked-pending { background-color: #fef3c7; border-color: #f59e0b; color: #92400e; }
-        .day.booked-approved { background-color: #dbeafe; border-color: #3b82f6; color: #1e40af; }
-        .day.selecting { background-color: var(--selection-color); border-color: var(--primary-color); }
-        .day.selection-start, .day.selection-end {
-            background-color: var(--primary-color) !important;
-            color: white !important;
-            z-index: 2;
-        }
-
-        .day-num { font-size: 1rem; }
-        .day-info { font-size: 0.6rem; opacity: 0.8; text-align: center; }
-
-        .legend {
-            display: flex;
-            gap: 1.5rem;
-            flex-wrap: wrap;
-            margin-top: 1rem;
-            font-size: 0.85rem;
-        }
-        .legend-item { display: flex; align-items: center; gap: 0.5rem; }
-        .dot { width: 12px; height: 12px; border-radius: 3px; }
-
-        .form-grid-3 {
-            display: grid;
-            grid-template-columns: 1fr 1fr 1fr;
-            gap: 1rem;
-        }
-        @media (max-width: 600px) { .form-grid-3 { grid-template-columns: 1fr; } }
-
-        .form-group { margin-bottom: 1.25rem; }
-        label { display: block; margin-bottom: 0.5rem; font-weight: 600; font-size: 0.9rem; }
-        input, select {
-            width: 100%;
-            padding: 0.8rem;
-            border: 2px solid var(--border-color);
-            border-radius: 10px;
-            font-size: 1rem;
-            transition: border-color 0.2s;
-        }
-        input:focus, select:focus { border-color: var(--primary-color); outline: none; }
-
-        .btn {
-            padding: 1rem;
-            border-radius: 12px;
-            border: none;
-            font-weight: 700;
-            cursor: pointer;
-            transition: all 0.2s;
-            width: 100%;
-        }
-        .btn-primary { background: var(--primary-color); color: white; }
-        .btn-primary:active { transform: scale(0.98); }
-
-        .vers-btn {
-            flex: 1;
-            padding: 0.9rem;
-            border-radius: 12px;
-            border: none;
-            font-weight: 700;
-            cursor: pointer;
-            font-size: 0.95rem;
-            transition: all 0.2s;
-        }
-        .vers-btn:active { transform: scale(0.97); }
-
-        .saldo-box {
-            text-align: center;
-            padding: 1.2rem;
-            border-radius: 14px;
-            font-size: 1.1rem;
-            font-weight: 800;
-        }
-
-        #notif-box {
-            position: fixed;
-            top: 1.5rem;
-            left: 50%;
-            transform: translateX(-50%);
-            z-index: 1000;
-            pointer-events: none;
-        }
-        .toast {
-            background: #1e293b;
-            color: white;
-            padding: 0.75rem 1.5rem;
-            border-radius: 50px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-            margin-bottom: 0.5rem;
-            font-weight: 600;
-            font-size: 0.9rem;
-            animation: slideDown 0.3s ease forwards;
-            white-space: nowrap;
-        }
-        @keyframes slideDown {
-            from { transform: translateY(-50px); opacity: 0; }
-            to { transform: translateY(0); opacity: 1; }
-        }
-
-        @media (max-width: 480px) {
-            .day-num { font-size: 0.9rem; }
-            .day-head { font-size: 0.65rem; }
-        }
+        @media(max-width:480px) { .day-num{font-size:.85rem} .day-head{font-size:.62rem} }
     </style>
 </head>
 <body>
 
 <header>
     <h1>🚗 La Nostra Macchina</h1>
-    <p>Fabiano & Salvatore — chi la prende oggi?</p>
-    <button onclick="downloadApp()" style="margin-top:1rem; padding:0.6rem 1.4rem; background:white; color:#2563eb; border:none; border-radius:50px; font-weight:700; font-size:0.9rem; cursor:pointer; box-shadow:0 2px 8px rgba(0,0,0,0.15);">
-        ⬇️ Scarica App
-    </button>
+    <p>Fabiano & Salvatore — conto gestione condiviso</p>
+    <button onclick="downloadApp()" style="margin-top:.9rem;padding:.5rem 1.2rem;background:white;color:#2563eb;border:none;border-radius:50px;font-weight:700;font-size:.85rem;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.15);">⬇️ Scarica App</button>
 </header>
 
 <nav>
-    <button id="nav-cal" class="active" onclick="switchTab('calendar')">📅 Quando la uso</button>
-    <button id="nav-exp" onclick="switchTab('expenses')">💸 Le nostre spese</button>
+    <button id="nav-cal" class="active" onclick="switchTab('calendar')">📅 Uso auto</button>
+    <button id="nav-conto" onclick="switchTab('conto')">🏦 Conto</button>
+    <button id="nav-spese" onclick="switchTab('spese')">📋 Movimenti</button>
 </nav>
 
 <main>
-    <!-- TAB CALENDARIO -->
+
+    <!-- TAB USO AUTO -->
     <section id="tab-calendar" class="tab-content active">
         <div class="card">
             <div id="calendar-container" class="months-container"></div>
             <div class="legend">
-                <div class="legend-item"><div class="dot" style="background:#2563eb;"></div> Confermato</div>
-                <div class="legend-item"><div class="dot" style="background:#f59e0b;"></div> Da confermare</div>
-                <div class="legend-item"><div class="dot" style="border:2px solid #2563eb;"></div> Oggi</div>
+                <div class="legend-item"><div class="dot" style="background:#2563eb;"></div>Confermato</div>
+                <div class="legend-item"><div class="dot" style="background:#f59e0b;"></div>Da confermare</div>
+                <div class="legend-item"><div class="dot" style="border:2px solid #2563eb;"></div>Oggi</div>
             </div>
         </div>
-
         <div class="card">
-            <h2>📊 Chi ha usato di più la macchina?</h2>
+            <h2>📊 Ripartizione utilizzo</h2>
             <div id="stats-container"></div>
         </div>
-
-        <div id="selection-bar" class="card" style="display:none; position:sticky; bottom:1rem; z-index:90; border:2px solid var(--primary-color);">
-            <div style="display:flex; justify-content:space-between; align-items:center; gap:1rem;">
-                <span id="sel-info" style="font-weight:800; font-size:0.9rem;">Scegli i giorni...</span>
-                <div style="display:flex; gap:0.5rem;">
-                    <button class="btn" style="background:#e2e8f0; width:auto; padding:0.6rem 1rem;" onclick="resetSelection()">Lascia perdere</button>
-                    <button class="btn btn-primary" style="width:auto; padding:0.6rem 1rem;" onclick="openBookingForm()">Prendo io! 🙋</button>
+        <div id="selection-bar" class="card">
+            <div style="display:flex;justify-content:space-between;align-items:center;gap:1rem;">
+                <span id="sel-info" style="font-weight:800;font-size:.9rem;">Scegli i giorni...</span>
+                <div style="display:flex;gap:.5rem;">
+                    <button class="btn btn-gray" style="width:auto;padding:.55rem .9rem;" onclick="resetSelection()">Annulla</button>
+                    <button class="btn btn-primary" style="width:auto;padding:.55rem .9rem;" onclick="openBookingForm()">Prendo io! 🙋</button>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- TAB SPESE -->
-    <section id="tab-expenses" class="tab-content">
+    <!-- TAB CONTO -->
+    <section id="tab-conto" class="tab-content">
 
-        <!-- SALDO -->
+        <!-- SALDO CONTO -->
         <div class="card">
-            <h2>💰 Saldo tra noi</h2>
-            <div id="saldo-box"></div>
+            <h2>🏦 Saldo conto gestione</h2>
+            <div id="saldo-conto"></div>
         </div>
+
+        <!-- QUOTE -->
+        <div class="card">
+            <h2>📐 Quote di competenza</h2>
+            <p style="font-size:.83rem;color:var(--muted);margin-bottom:1rem;">Calcolate in base ai giorni d'uso. Le giornate in comune sono divise al 50%.</p>
+            <div id="quote-container"></div>
+        </div>
+
+        <!-- VERSA SUL CONTO -->
+        <div class="card">
+            <h2>💳 Versa sul conto</h2>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Chi versa?</label>
+                    <select id="vers-da">
+                        <option value="Fabiano">Fabiano</option>
+                        <option value="Salvatore">Salvatore</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Importo (€)</label>
+                    <input type="number" id="vers-amount" step="0.01" min="0.01" placeholder="es. 150.00">
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Nota (facoltativo)</label>
+                <input type="text" id="vers-note" placeholder="es. Quota gennaio, integrazione assicurazione...">
+            </div>
+            <button class="btn btn-green" onclick="saveVersamento()">Versa sul conto 💰</button>
+        </div>
+
+    </section>
+
+    <!-- TAB MOVIMENTI -->
+    <section id="tab-spese" class="tab-content">
 
         <!-- NUOVA SPESA -->
         <div class="card">
-            <h2>Aggiungi una spesa</h2>
-            <form id="exp-form">
-                <div class="form-grid-3">
+            <h2>➕ Aggiungi spesa dal conto</h2>
+            <form id="spesa-form">
+                <div class="form-row-3">
                     <div class="form-group">
-                        <label>Cosa hai pagato?</label>
-                        <input type="text" id="exp-desc" placeholder="es. Pieno benzina, bollo..." required>
+                        <label>Descrizione</label>
+                        <input type="text" id="sp-desc" placeholder="es. Pieno benzina" required>
                     </div>
                     <div class="form-group">
-                        <label>Quanto (€)?</label>
-                        <input type="number" id="exp-amount" step="0.01" min="0.01" required>
+                        <label>Importo (€)</label>
+                        <input type="number" id="sp-amount" step="0.01" min="0.01" required>
                     </div>
                     <div class="form-group">
-                        <label>Chi ha pagato?</label>
-                        <select id="exp-payer">
-                            <option value="Fabiano">Fabiano</option>
-                            <option value="Salvatore">Salvatore</option>
-                            <option value="Entrambi">Entrambi (split)</option>
+                        <label>Categoria</label>
+                        <select id="sp-cat">
+                            <option value="⛽ Benzina">⛽ Benzina</option>
+                            <option value="🔧 Tagliando">🔧 Tagliando</option>
+                            <option value="🛡️ Assicurazione">🛡️ Assicurazione</option>
+                            <option value="🏛️ Bollo">🏛️ Bollo</option>
+                            <option value="🛣️ Pedaggi">🛣️ Pedaggi</option>
+                            <option value="🅿️ Parcheggio">🅿️ Parcheggio</option>
+                            <option value="🧽 Lavaggio">🧽 Lavaggio</option>
+                            <option value="🔩 Riparazione">🔩 Riparazione</option>
+                            <option value="📋 Altro">📋 Altro</option>
                         </select>
                     </div>
                 </div>
-                <div style="display:flex; gap:0.75rem; flex-wrap:wrap;">
-                    <button type="submit" class="btn btn-primary" style="flex:1; min-width:140px;">Aggiungi spesa 💳</button>
-                    <button type="button" onclick="notify('📊 Importazione Excel — prossimamente!')" class="btn" style="flex:1; min-width:140px; background:#16a34a; color:white;">📂 Carica da Excel</button>
+                <div style="display:flex;gap:.75rem;flex-wrap:wrap;">
+                    <button type="submit" class="btn btn-primary" style="flex:1;min-width:140px;">Registra spesa</button>
+                    <button type="button" onclick="notify('📊 Importazione Excel — prossimamente!')" class="btn" style="flex:1;min-width:140px;background:#16a34a;color:white;">📂 Carica da Excel</button>
                 </div>
             </form>
         </div>
 
-        <!-- VERSAMENTO -->
-        <div class="card">
-            <h2>💸 Versamento tra noi</h2>
-            <div class="form-group">
-                <label>Quanto ha versato (€)?</label>
-                <input type="number" id="vers-amount" step="0.01" min="0.01" placeholder="es. 50.00">
-            </div>
-            <div class="form-group">
-                <label>Nota (facoltativo)</label>
-                <input type="text" id="vers-note" placeholder="es. Saldo marzo, rimborso benzina...">
-            </div>
-            <div style="display:flex; gap:0.75rem;">
-                <button class="vers-btn" style="background:#dbeafe; color:#1e40af;" onclick="saveVersamento('Fabiano','Salvatore')">
-                    Fabiano → Salvatore
-                </button>
-                <button class="vers-btn" style="background:#ede9fe; color:#5b21b6;" onclick="saveVersamento('Salvatore','Fabiano')">
-                    Salvatore → Fabiano
-                </button>
-            </div>
-        </div>
-
         <!-- STORICO -->
         <div class="card">
-            <h2>Storico movimenti</h2>
-            <div id="expenses-list"></div>
+            <h2>📋 Storico movimenti</h2>
+            <div id="movimenti-list"></div>
         </div>
+
     </section>
+
 </main>
 
 <!-- MODAL PRENOTAZIONE -->
-<div id="booking-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); z-index:200; align-items:center; justify-content:center;">
-    <div class="card" style="width:90%; max-width:400px; margin:0;">
+<div id="booking-modal" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.6);z-index:200;align-items:center;justify-content:center;">
+    <div class="card" style="width:90%;max-width:400px;margin:0;">
         <h2>Chi la prende? 🚗</h2>
         <div class="form-group">
             <label>Sono io oppure...</label>
@@ -365,10 +252,10 @@
         </div>
         <div class="form-group">
             <label>Dove vai? (facoltativo)</label>
-            <input type="text" id="book-note" placeholder="es. Al mare, dal medico, giro commissioni...">
+            <input type="text" id="book-note" placeholder="es. Al mare, dal medico...">
         </div>
-        <div style="display:flex; gap:1rem;">
-            <button class="btn" style="background:#e2e8f0;" onclick="closeModal()">Torno indietro</button>
+        <div style="display:flex;gap:1rem;">
+            <button class="btn btn-gray" onclick="closeModal()">Torno indietro</button>
             <button class="btn btn-primary" onclick="saveBooking()">Prenoto! ✅</button>
         </div>
     </div>
@@ -377,351 +264,366 @@
 <div id="notif-box"></div>
 
 <script>
-    // --- DEMO DATA ---
-    const DEMO_BOOKINGS = [
-        { id:1,  startDate:'2026-01-03', endDate:'2026-01-05', user:'Fabiano',   note:'Giro in città',           approved:true },
-        { id:2,  startDate:'2026-01-10', endDate:'2026-01-13', user:'Salvatore', note:'Weekend fuori',            approved:true },
-        { id:3,  startDate:'2026-01-20', endDate:'2026-01-21', user:'Insieme',   note:'Escursione in montagna',   approved:true },
-        { id:4,  startDate:'2026-02-03', endDate:'2026-02-08', user:'Fabiano',   note:'Settimana bianca',         approved:true },
-        { id:5,  startDate:'2026-02-14', endDate:'2026-02-16', user:'Salvatore', note:'San Valentino fuori',      approved:true },
-        { id:6,  startDate:'2026-03-07', endDate:'2026-03-09', user:'Fabiano',   note:'Visita ai genitori',       approved:true },
-        { id:7,  startDate:'2026-03-21', endDate:'2026-03-23', user:'Insieme',   note:'Gita al mare',             approved:true },
-        { id:8,  startDate:'2026-04-05', endDate:'2026-04-10', user:'Salvatore', note:'Pasqua in famiglia',       approved:true },
-        { id:9,  startDate:'2026-04-18', endDate:'2026-04-20', user:'Fabiano',   note:'Ponte di aprile',          approved:true },
-        { id:10, startDate:'2026-05-02', endDate:'2026-05-05', user:'Salvatore', note:'Primo maggio',             approved:true },
-        { id:11, startDate:'2026-05-17', endDate:'2026-05-18', user:'Insieme',   note:'Sagra del paese',          approved:true },
-        { id:12, startDate:'2026-06-01', endDate:'2026-06-03', user:'Fabiano',   note:'Ponte della Repubblica',   approved:true },
+// ─── DEMO DATA ───────────────────────────────────────────────
+const DEMO_BOOKINGS = [
+    {id:1, startDate:'2026-01-03',endDate:'2026-01-05',user:'Fabiano',  note:'Giro in città',         approved:true},
+    {id:2, startDate:'2026-01-10',endDate:'2026-01-13',user:'Salvatore',note:'Weekend fuori',          approved:true},
+    {id:3, startDate:'2026-01-20',endDate:'2026-01-21',user:'Insieme',  note:'Escursione in montagna', approved:true},
+    {id:4, startDate:'2026-02-03',endDate:'2026-02-08',user:'Fabiano',  note:'Settimana bianca',       approved:true},
+    {id:5, startDate:'2026-02-14',endDate:'2026-02-16',user:'Salvatore',note:'San Valentino fuori',    approved:true},
+    {id:6, startDate:'2026-03-07',endDate:'2026-03-09',user:'Fabiano',  note:'Visita ai genitori',     approved:true},
+    {id:7, startDate:'2026-03-21',endDate:'2026-03-23',user:'Insieme',  note:'Gita al mare',           approved:true},
+    {id:8, startDate:'2026-04-05',endDate:'2026-04-10',user:'Salvatore',note:'Pasqua in famiglia',     approved:true},
+    {id:9, startDate:'2026-04-18',endDate:'2026-04-20',user:'Fabiano',  note:'Ponte di aprile',        approved:true},
+    {id:10,startDate:'2026-05-02',endDate:'2026-05-05',user:'Salvatore',note:'Primo maggio',           approved:true},
+    {id:11,startDate:'2026-05-17',endDate:'2026-05-18',user:'Insieme',  note:'Sagra del paese',        approved:true},
+    {id:12,startDate:'2026-06-01',endDate:'2026-06-03',user:'Fabiano',  note:'Ponte della Repubblica', approved:true},
+];
+
+const DEMO_SPESE = [
+    {id:101,desc:'Assicurazione semestrale',cat:'🛡️ Assicurazione',amount:240.00,date:'02/01/2026'},
+    {id:102,desc:'Bollo auto',              cat:'🏛️ Bollo',         amount:148.00,date:'05/01/2026'},
+    {id:103,desc:'Pieno benzina',          cat:'⛽ Benzina',        amount:65.00, date:'03/01/2026'},
+    {id:104,desc:'Pieno benzina',          cat:'⛽ Benzina',        amount:61.20, date:'20/01/2026'},
+    {id:105,desc:'Autostrada — andata',     cat:'🛣️ Pedaggi',       amount:12.50, date:'10/01/2026'},
+    {id:106,desc:'Pieno benzina',          cat:'⛽ Benzina',        amount:67.40, date:'08/02/2026'},
+    {id:107,desc:'Parcheggio aeroporto',   cat:'🅿️ Parcheggio',    amount:28.00, date:'14/02/2026'},
+    {id:108,desc:'Pieno benzina',          cat:'⛽ Benzina',        amount:63.80, date:'07/03/2026'},
+    {id:109,desc:'Lavaggio auto',          cat:'🧽 Lavaggio',       amount:15.00, date:'21/03/2026'},
+    {id:110,desc:'Tagliando + filtri',     cat:'🔧 Tagliando',      amount:180.00,date:'06/04/2026'},
+    {id:111,desc:'Pieno benzina',          cat:'⛽ Benzina',        amount:70.00, date:'05/04/2026'},
+    {id:112,desc:'Pedaggi autostrada',     cat:'🛣️ Pedaggi',       amount:18.60, date:'18/04/2026'},
+    {id:113,desc:'Pieno benzina',          cat:'⛽ Benzina',        amount:64.50, date:'02/05/2026'},
+    {id:114,desc:'Revisione annuale',      cat:'🔩 Riparazione',    amount:55.00, date:'17/05/2026'},
+    {id:115,desc:'Pieno benzina',          cat:'⛽ Benzina',        amount:68.90, date:'01/06/2026'},
+    {id:116,desc:'Autostrada — ritorno',   cat:'🛣️ Pedaggi',       amount:12.50, date:'03/06/2026'},
+];
+
+const DEMO_VERSAMENTI = [
+    {id:201,da:'Fabiano',   amount:300.00,date:'01/01/2026',note:'Quota apertura conto'},
+    {id:202,da:'Salvatore', amount:300.00,date:'01/01/2026',note:'Quota apertura conto'},
+    {id:203,da:'Fabiano',   amount:300.00,date:'01/04/2026',note:'Ricarica secondo trimestre'},
+    {id:204,da:'Salvatore', amount:250.00,date:'01/04/2026',note:'Ricarica secondo trimestre'},
+];
+
+// ─── STATE ───────────────────────────────────────────────────
+let bookings   = JSON.parse(localStorage.getItem('cs_bookings'));
+let spese      = JSON.parse(localStorage.getItem('cs_spese'));
+let versamenti = JSON.parse(localStorage.getItem('cs_versamenti'));
+if (!bookings)   { bookings   = DEMO_BOOKINGS;   localStorage.setItem('cs_bookings',   JSON.stringify(bookings)); }
+if (!spese)      { spese      = DEMO_SPESE;      localStorage.setItem('cs_spese',      JSON.stringify(spese)); }
+if (!versamenti) { versamenti = DEMO_VERSAMENTI; localStorage.setItem('cs_versamenti', JSON.stringify(versamenti)); }
+let tempStart = null, tempEnd = null;
+
+const save = () => {
+    localStorage.setItem('cs_bookings',   JSON.stringify(bookings));
+    localStorage.setItem('cs_spese',      JSON.stringify(spese));
+    localStorage.setItem('cs_versamenti', JSON.stringify(versamenti));
+};
+
+// ─── NOTIFY ──────────────────────────────────────────────────
+function notify(msg) {
+    const box = document.getElementById('notif-box');
+    const t = document.createElement('div');
+    t.className = 'toast'; t.innerText = msg;
+    box.appendChild(t);
+    setTimeout(() => t.remove(), 2800);
+}
+
+// ─── TABS ────────────────────────────────────────────────────
+function switchTab(tab) {
+    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+    document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
+    document.getElementById('tab-' + tab).classList.add('active');
+    document.getElementById('nav-' + tab).classList.add('active');
+    if (tab === 'calendar') { renderCalendar(); resetSelection(); renderStats(); }
+    if (tab === 'conto')    { renderConto(); }
+    if (tab === 'spese')    { renderMovimenti(); }
+}
+
+// ─── USAGE STATS ─────────────────────────────────────────────
+function calcDays(s, e) { return Math.round((new Date(e) - new Date(s)) / 86400000) + 1; }
+
+function calcUsage() {
+    let fab = 0, sal = 0, ins = 0;
+    bookings.filter(b => b.approved).forEach(b => {
+        const d = calcDays(b.startDate, b.endDate);
+        if (b.user === 'Fabiano') fab += d;
+        else if (b.user === 'Salvatore') sal += d;
+        else ins += d;
+    });
+    const fabEff = fab + ins / 2;
+    const salEff = sal + ins / 2;
+    const tot    = fabEff + salEff || 1;
+    return { fab, sal, ins, fabEff, salEff, fabPct: fabEff / tot, salPct: salEff / tot, totDays: fab + sal + ins };
+}
+
+function renderStats() {
+    const u = calcUsage();
+    const container = document.getElementById('stats-container');
+    if (!container) return;
+    if (u.totDays === 0) { container.innerHTML = '<p style="color:var(--muted);text-align:center;">Nessuna prenotazione ancora.</p>'; return; }
+    const rows = [
+        { name:'Fabiano',   days:u.fab, eff:u.fabEff, pct:u.fabPct, color:'#2563eb' },
+        { name:'Salvatore', days:u.sal, eff:u.salEff, pct:u.salPct, color:'#7c3aed' },
+        { name:'Insieme',   days:u.ins, eff:null,      pct:null,     color:'#059669' },
     ];
+    container.innerHTML = rows.map(r => `
+        <div class="quota-row">
+            <span class="quota-name">${r.name === 'Insieme' ? '👬' : '👤'} ${r.name}</span>
+            <div class="quota-bar-wrap">
+                <div class="quota-bar" style="width:${r.pct ? r.pct*100 : (u.ins/(u.totDays||1))*100}%;background:${r.color};"></div>
+            </div>
+            <span class="quota-nums" style="color:${r.color};">
+                ${r.days} gg ${r.pct ? '→ <strong>' + Math.round(r.pct*100) + '%</strong>' : '(÷2)'}
+            </span>
+        </div>
+    `).join('') + `<p style="font-size:.8rem;color:var(--muted);margin-top:.75rem;text-align:right;">Totale: <strong>${u.totDays} giorni</strong> · Le giornate «Insieme» valgono il 50% per ciascuno</p>`;
+}
 
-    const DEMO_EXPENSES = [
-        { id:101, desc:'Pieno benzina',          amount:65.00,  date:'03/01/2026', pagato_da:'Fabiano'   },
-        { id:102, desc:'Autostrada A1',           amount:12.50,  date:'10/01/2026', pagato_da:'Salvatore' },
-        { id:103, desc:'Pieno benzina',          amount:61.20,  date:'20/01/2026', pagato_da:'Fabiano'   },
-        { id:104, desc:'Cambio olio + filtri',    amount:89.00,  date:'03/02/2026', pagato_da:'Salvatore' },
-        { id:105, desc:'Pieno benzina',          amount:67.40,  date:'08/02/2026', pagato_da:'Fabiano'   },
-        { id:106, desc:'Parcheggio aeroporto',    amount:28.00,  date:'14/02/2026', pagato_da:'Salvatore' },
-        { id:107, desc:'Pieno benzina',          amount:63.80,  date:'07/03/2026', pagato_da:'Fabiano'   },
-        { id:108, desc:'Lavaggio auto',           amount:15.00,  date:'21/03/2026', pagato_da:'Entrambi'  },
-        { id:109, desc:'Pieno benzina',          amount:70.00,  date:'05/04/2026', pagato_da:'Salvatore' },
-        { id:110, desc:'Pedaggi autostrada',      amount:18.60,  date:'18/04/2026', pagato_da:'Fabiano'   },
-        { id:111, desc:'Pieno benzina',          amount:64.50,  date:'02/05/2026', pagato_da:'Salvatore' },
-        { id:112, desc:'Revisione annuale',       amount:55.00,  date:'17/05/2026', pagato_da:'Entrambi'  },
-        { id:113, desc:'Pieno benzina',          amount:68.90,  date:'01/06/2026', pagato_da:'Fabiano'   },
-        { id:114, desc:'Bollo auto',             amount:148.00, date:'10/06/2026', pagato_da:'Salvatore' },
-    ];
+// ─── CONTO ───────────────────────────────────────────────────
+function renderConto() {
+    const u = calcUsage();
+    const totSpese  = spese.reduce((s, e) => s + e.amount, 0);
+    const fabVers   = versamenti.filter(v => v.da === 'Fabiano').reduce((s, v) => s + v.amount, 0);
+    const salVers   = versamenti.filter(v => v.da === 'Salvatore').reduce((s, v) => s + v.amount, 0);
+    const saldo     = fabVers + salVers - totSpese;
 
-    const DEMO_VERSAMENTI = [
-        { id:201, da:'Fabiano',   a:'Salvatore', amount:30.00, date:'31/03/2026', note:'Saldo primo trimestre' },
-        { id:202, da:'Salvatore', a:'Fabiano',   amount:20.00, date:'30/04/2026', note:'Rimborso pedaggi aprile' },
-    ];
+    const fabDovrebbe = totSpese * u.fabPct;
+    const salDovrebbe = totSpese * u.salPct;
+    const fabDelta    = fabVers - fabDovrebbe;
+    const salDelta    = salVers - salDovrebbe;
 
-    // --- STATE ---
-    let bookings    = JSON.parse(localStorage.getItem('cs_bookings'));
-    let expenses    = JSON.parse(localStorage.getItem('cs_expenses'));
-    let versamenti  = JSON.parse(localStorage.getItem('cs_versamenti'));
-    if (!bookings)   { bookings   = DEMO_BOOKINGS;   localStorage.setItem('cs_bookings',   JSON.stringify(bookings)); }
-    if (!expenses)   { expenses   = DEMO_EXPENSES;   localStorage.setItem('cs_expenses',   JSON.stringify(expenses)); }
-    if (!versamenti) { versamenti = DEMO_VERSAMENTI; localStorage.setItem('cs_versamenti', JSON.stringify(versamenti)); }
-    let tempStart = null, tempEnd = null;
+    // Saldo conto
+    const saldoColor = saldo >= 0 ? '#dcfce7' : '#fee2e2';
+    const saldoText  = saldo >= 0 ? '#166534' : '#991b1b';
+    document.getElementById('saldo-conto').innerHTML = `
+        <div class="saldo-principale" style="background:${saldoColor};color:${saldoText};">
+            <div class="importo">${saldo >= 0 ? '+' : ''}€${saldo.toFixed(2)}</div>
+            <div class="label">Saldo disponibile nel conto</div>
+        </div>
+        <div style="display:flex;gap:1rem;flex-wrap:wrap;font-size:.85rem;">
+            <div style="flex:1;min-width:120px;text-align:center;padding:.6rem;background:#f8fafc;border-radius:10px;">
+                <div style="font-weight:800;font-size:1.1rem;">€${(fabVers+salVers).toFixed(2)}</div>
+                <div style="color:var(--muted);">Totale versato</div>
+            </div>
+            <div style="flex:1;min-width:120px;text-align:center;padding:.6rem;background:#f8fafc;border-radius:10px;">
+                <div style="font-weight:800;font-size:1.1rem;color:var(--red);">€${totSpese.toFixed(2)}</div>
+                <div style="color:var(--muted);">Totale spese</div>
+            </div>
+        </div>`;
 
-    const save = () => {
-        localStorage.setItem('cs_bookings',   JSON.stringify(bookings));
-        localStorage.setItem('cs_expenses',   JSON.stringify(expenses));
-        localStorage.setItem('cs_versamenti', JSON.stringify(versamenti));
+    // Quote
+    const makeQuota = (name, versato, dovrebbe, delta, color) => {
+        const manca = -delta;
+        const stato = delta >= -0.005
+            ? `<span class="badge" style="background:#dcfce7;color:#166534;">In pari ✓</span>`
+            : `<span class="badge" style="background:#fee2e2;color:#991b1b;">Mancano €${manca.toFixed(2)}</span>`;
+        return `
+        <div class="quota-row">
+            <div style="min-width:95px;"><div style="font-weight:700;">👤 ${name}</div>${stato}</div>
+            <div class="quota-bar-wrap">
+                <div class="quota-bar" style="width:${Math.min(versato/dovrebbe*100,100)||0}%;background:${color};"></div>
+            </div>
+            <div class="quota-nums" style="color:${color};">
+                <div>Versato: <strong>€${versato.toFixed(2)}</strong></div>
+                <div style="opacity:.7;">Su: €${dovrebbe.toFixed(2)}</div>
+            </div>
+        </div>`;
     };
+    document.getElementById('quote-container').innerHTML =
+        makeQuota('Fabiano',  fabVers, fabDovrebbe, fabDelta, '#2563eb') +
+        makeQuota('Salvatore',salVers, salDovrebbe, salDelta, '#7c3aed') +
+        `<p style="font-size:.8rem;color:var(--muted);margin-top:.75rem;">
+            Quota Fabiano: <strong>${Math.round(u.fabPct*100)}%</strong> ·
+            Quota Salvatore: <strong>${Math.round(u.salPct*100)}%</strong>
+         </p>`;
+}
 
-    function notify(msg) {
-        const box = document.getElementById('notif-box');
-        const t = document.createElement('div');
-        t.className = 'toast';
-        t.innerText = msg;
-        box.appendChild(t);
-        setTimeout(() => t.remove(), 2800);
+// ─── VERSAMENTO ──────────────────────────────────────────────
+function saveVersamento() {
+    const da     = document.getElementById('vers-da').value;
+    const amount = parseFloat(document.getElementById('vers-amount').value);
+    const note   = document.getElementById('vers-note').value;
+    if (!amount || amount <= 0) { notify('⚠️ Inserisci un importo valido!'); return; }
+    versamenti.push({ id: Date.now(), da, amount, date: new Date().toLocaleDateString('it-IT'), note });
+    save();
+    document.getElementById('vers-amount').value = '';
+    document.getElementById('vers-note').value = '';
+    renderConto();
+    notify(`✅ ${da} ha versato €${amount.toFixed(2)} sul conto`);
+}
+
+// ─── SPESE ───────────────────────────────────────────────────
+document.getElementById('spesa-form').onsubmit = function(e) {
+    e.preventDefault();
+    const desc   = document.getElementById('sp-desc').value;
+    const amount = parseFloat(document.getElementById('sp-amount').value);
+    const cat    = document.getElementById('sp-cat').value;
+    spese.push({ id: Date.now(), desc, cat, amount, date: new Date().toLocaleDateString('it-IT') });
+    save();
+    this.reset();
+    renderMovimenti();
+    notify(`💸 Spesa di €${amount.toFixed(2)} registrata dal conto`);
+};
+
+function renderMovimenti() {
+    const list = document.getElementById('movimenti-list');
+    const items = [
+        ...spese.map(s => ({ ...s, tipo:'spesa' })),
+        ...versamenti.map(v => ({ ...v, tipo:'versamento' })),
+    ].sort((a, b) => b.id - a.id);
+
+    if (items.length === 0) {
+        list.innerHTML = '<p style="color:var(--muted);text-align:center;padding:1rem;">Nessun movimento ancora.</p>';
+        return;
     }
-
-    // --- TABS ---
-    function switchTab(tab) {
-        document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-        document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
-        document.getElementById('tab-' + tab).classList.add('active');
-        document.getElementById('nav-' + (tab === 'calendar' ? 'cal' : 'exp')).classList.add('active');
-        if (tab === 'calendar') { renderCalendar(); resetSelection(); renderStats(); }
-        else { renderSaldo(); renderExpenses(); }
-    }
-
-    // --- SALDO ---
-    function calcSaldo() {
-        let fabPaid = 0, salPaid = 0;
-        expenses.forEach(ex => {
-            if (ex.pagato_da === 'Fabiano')       fabPaid += ex.amount;
-            else if (ex.pagato_da === 'Salvatore') salPaid += ex.amount;
-            else { fabPaid += ex.amount / 2; salPaid += ex.amount / 2; }
-        });
-        // net > 0 → Salvatore deve a Fabiano; net < 0 → Fabiano deve a Salvatore
-        let net = (fabPaid - salPaid) / 2;
-        versamenti.forEach(v => {
-            if (v.da === 'Fabiano'   && v.a === 'Salvatore') net += v.amount;
-            if (v.da === 'Salvatore' && v.a === 'Fabiano')   net -= v.amount;
-        });
-        return net;
-    }
-
-    function renderSaldo() {
-        const net = calcSaldo();
-        const box = document.getElementById('saldo-box');
-        if (Math.abs(net) < 0.01) {
-            box.innerHTML = `<div class="saldo-box" style="background:#dcfce7; color:#166534;">🎉 Siete in pari! Nessuno deve niente.</div>`;
-        } else if (net > 0) {
-            box.innerHTML = `<div class="saldo-box" style="background:#ede9fe; color:#5b21b6;">Salvatore deve <strong>€${net.toFixed(2)}</strong> a Fabiano 💶</div>`;
-        } else {
-            box.innerHTML = `<div class="saldo-box" style="background:#dbeafe; color:#1e40af;">Fabiano deve <strong>€${Math.abs(net).toFixed(2)}</strong> a Salvatore 💶</div>`;
-        }
-    }
-
-    // --- VERSAMENTO ---
-    function saveVersamento(da, a) {
-        const amtEl = document.getElementById('vers-amount');
-        const noteEl = document.getElementById('vers-note');
-        const amt = parseFloat(amtEl.value);
-        if (!amt || amt <= 0) { notify('⚠️ Inserisci un importo!'); return; }
-        versamenti.push({ id: Date.now(), da, a, amount: amt, date: new Date().toLocaleDateString('it-IT'), note: noteEl.value });
-        save();
-        amtEl.value = '';
-        noteEl.value = '';
-        renderSaldo();
-        renderExpenses();
-        notify(`✅ ${da} ha versato €${amt.toFixed(2)} a ${a}`);
-    }
-
-    // --- EXPENSES ---
-    document.getElementById('exp-form').onsubmit = function(e) {
-        e.preventDefault();
-        const desc     = document.getElementById('exp-desc').value;
-        const amount   = parseFloat(document.getElementById('exp-amount').value);
-        const pagato_da = document.getElementById('exp-payer').value;
-        expenses.push({ id: Date.now(), desc, amount, pagato_da, date: new Date().toLocaleDateString('it-IT') });
-        save();
-        this.reset();
-        renderSaldo();
-        renderExpenses();
-        notify('💰 Spesa aggiunta!');
-    };
-
-    function renderExpenses() {
-        const list = document.getElementById('expenses-list');
-
-        // Merge expenses + versamenti in cronological order (most recent first)
-        const items = [
-            ...expenses.map(e => ({ ...e, tipo: 'spesa' })),
-            ...versamenti.map(v => ({ ...v, tipo: 'versamento' })),
-        ].sort((a, b) => b.id - a.id);
-
-        if (items.length === 0) {
-            list.innerHTML = '<p style="color:#94a3b8; text-align:center; padding:1rem;">Niente ancora — chi paga il primo pieno? 😄</p>';
-            return;
-        }
-
-        const payerColor = { Fabiano: '#2563eb', Salvatore: '#7c3aed', Entrambi: '#059669' };
-        const payerLabel = { Fabiano: 'Fab', Salvatore: 'Sal', Entrambi: '½+½' };
-
-        list.innerHTML = items.map(item => {
-            if (item.tipo === 'versamento') {
-                return `
-                <div style="display:flex; justify-content:space-between; align-items:center; padding:1rem 0; border-bottom:1px solid #eee;">
-                    <div style="display:flex; align-items:center; gap:0.75rem;">
-                        <span style="font-size:1.3rem;">💸</span>
-                        <div>
-                            <div style="font-weight:700; color:#059669;">${item.da} → ${item.a}</div>
-                            <div style="font-size:0.8rem; color:#64748b;">${item.date}${item.note ? ' · ' + item.note : ''}</div>
-                        </div>
-                    </div>
-                    <div style="font-weight:800; color:#059669;">+€${item.amount.toFixed(2)}</div>
-                </div>`;
-            }
-            const payer = item.pagato_da || 'Entrambi';
-            const color = payerColor[payer] || '#64748b';
-            const label = payerLabel[payer] || payer;
-            return `
-            <div style="display:flex; justify-content:space-between; align-items:center; padding:1rem 0; border-bottom:1px solid #eee;">
-                <div style="display:flex; align-items:center; gap:0.75rem;">
-                    <span style="background:${color}; color:white; font-size:0.7rem; font-weight:800; padding:0.2rem 0.45rem; border-radius:6px;">${label}</span>
+    list.innerHTML = items.map(item => {
+        if (item.tipo === 'versamento') {
+            const color = item.da === 'Fabiano' ? '#2563eb' : '#7c3aed';
+            return `<div class="mov-row">
+                <div style="display:flex;align-items:center;">
+                    <span class="mov-icon">💳</span>
                     <div>
-                        <div style="font-weight:700;">${item.desc}</div>
-                        <div style="font-size:0.8rem; color:#64748b;">${item.date}</div>
+                        <div class="mov-label" style="color:${color};">${item.da} → conto</div>
+                        <div class="mov-sub">${item.date}${item.note ? ' · ' + item.note : ''}</div>
                     </div>
                 </div>
-                <div style="font-weight:800; color:var(--error-color);">-€${item.amount.toFixed(2)}</div>
+                <div class="mov-amount" style="color:var(--green);">+€${item.amount.toFixed(2)}</div>
             </div>`;
-        }).join('');
-    }
-
-    // --- CALENDAR ---
-    function renderCalendar() {
-        const container = document.getElementById('calendar-container');
-        container.innerHTML = '';
-        const now = new Date();
-        for (let i = 0; i < 3; i++) {
-            container.appendChild(createMonthElement(new Date(now.getFullYear(), now.getMonth() + i, 1)));
         }
-    }
-
-    function createMonthElement(date) {
-        const wrapper = document.createElement('div');
-        wrapper.className = 'month-view';
-        const monthName = new Intl.DateTimeFormat('it-IT', { month:'long', year:'numeric' }).format(date);
-        wrapper.innerHTML = `<div class="month-title">${monthName}</div>`;
-        const grid = document.createElement('div');
-        grid.className = 'calendar-grid';
-        ['L','M','M','G','V','S','D'].forEach(d => { grid.innerHTML += `<div class="day-head">${d}</div>`; });
-        const year = date.getFullYear(), month = date.getMonth();
-        let firstDay = new Date(year, month, 1).getDay();
-        firstDay = firstDay === 0 ? 6 : firstDay - 1;
-        const daysInMonth = new Date(year, month + 1, 0).getDate();
-        for (let i = 0; i < firstDay; i++) grid.innerHTML += `<div class="day empty"></div>`;
-        const todayStr = new Date().toISOString().split('T')[0];
-        for (let d = 1; d <= daysInMonth; d++) {
-            const dateStr = `${year}-${String(month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
-            const booking = bookings.find(b => dateStr >= b.startDate && dateStr <= b.endDate);
-            const dayEl = document.createElement('div');
-            dayEl.className = 'day';
-            dayEl.dataset.date = dateStr;
-            if (dateStr === todayStr) dayEl.classList.add('today');
-            if (booking) {
-                dayEl.classList.add(booking.approved ? 'booked-approved' : 'booked-pending');
-                dayEl.innerHTML = `<span class="day-num">${d}</span><span class="day-info">${booking.user}</span>`;
-                dayEl.onclick = () => handleBookingClick(booking);
-            } else {
-                dayEl.innerHTML = `<span class="day-num">${d}</span>`;
-                dayEl.onclick = () => handleDayClick(dateStr);
-            }
-            grid.appendChild(dayEl);
-        }
-        wrapper.appendChild(grid);
-        return wrapper;
-    }
-
-    // --- SELECTION ---
-    function handleDayClick(date) {
-        if (!tempStart || (tempStart && tempEnd)) {
-            tempStart = date; tempEnd = null;
-            notify('📍 Inizio: ' + formatDate(date) + ' — ora tocca il giorno in cui la riporti!');
-        } else {
-            if (date < tempStart) { tempStart = date; notify('📍 Ok, parto prima: ' + formatDate(date)); }
-            else {
-                if (isRangeOccupied(tempStart, date)) { notify('😬 Quei giorni sono già occupati!'); return; }
-                tempEnd = date; notify('👍 Perfetto! Ora conferma.');
-            }
-        }
-        updateSelectionUI();
-    }
-
-    function isRangeOccupied(start, end) {
-        return bookings.some(b => start <= b.endDate && end >= b.startDate);
-    }
-
-    function updateSelectionUI() {
-        const allDays = document.querySelectorAll('.day:not(.empty)');
-        const bar = document.getElementById('selection-bar');
-        const info = document.getElementById('sel-info');
-        allDays.forEach(el => {
-            const d = el.dataset.date;
-            el.classList.remove('selecting','selection-start','selection-end');
-            if (tempStart && d === tempStart) el.classList.add('selection-start');
-            if (tempEnd   && d === tempEnd)   el.classList.add('selection-end');
-            if (tempStart && tempEnd && d > tempStart && d < tempEnd) el.classList.add('selecting');
-        });
-        if (tempStart) {
-            bar.style.display = 'block';
-            info.innerText = tempEnd
-                ? `${formatDate(tempStart)} ➔ ${formatDate(tempEnd)}`
-                : `Dal ${formatDate(tempStart)}... fino a quando?`;
-        } else {
-            bar.style.display = 'none';
-        }
-    }
-
-    function resetSelection() { tempStart = null; tempEnd = null; updateSelectionUI(); }
-
-    function formatDate(iso) {
-        return new Date(iso).toLocaleDateString('it-IT', { day:'numeric', month:'short' });
-    }
-
-    // --- BOOKING ---
-    function openBookingForm() {
-        if (!tempStart || !tempEnd) { notify('⚠️ Tocca prima il giorno in cui la riporti!'); return; }
-        document.getElementById('booking-modal').style.display = 'flex';
-    }
-
-    function closeModal() { document.getElementById('booking-modal').style.display = 'none'; }
-
-    function saveBooking() {
-        const user = document.getElementById('book-user').value;
-        const note = document.getElementById('book-note').value;
-        const insieme = user === 'Insieme';
-        bookings.push({ id: Date.now(), startDate: tempStart, endDate: tempEnd, user, note, approved: insieme });
-        save(); closeModal(); resetSelection(); renderCalendar(); renderStats();
-        if (insieme) notify('✅ Uscita di coppia! Già confermata 👬');
-        else notify(`📩 Richiesta mandata! Aspetta che ${user === 'Fabiano' ? 'Salvatore' : 'Fabiano'} confermi.`);
-    }
-
-    function handleBookingClick(booking) {
-        if (!booking.approved) {
-            const altro = booking.user === 'Fabiano' ? 'Salvatore' : 'Fabiano';
-            const dove = booking.note ? ` — ${booking.note}` : '';
-            if (confirm(`${booking.user} vuole la macchina dal ${formatDate(booking.startDate)} al ${formatDate(booking.endDate)}${dove}.\n\nSei ${altro}? Confermi?`)) {
-                booking.approved = true; save(); renderCalendar(); renderStats();
-                notify(`✅ ${altro} ha confermato! La macchina è di ${booking.user}.`);
-            }
-        } else {
-            notify(booking.note ? `🚗 ${booking.user} ha la macchina — ${booking.note}` : `🚗 La macchina è di ${booking.user} questi giorni`);
-        }
-    }
-
-    // --- STATS ---
-    function calcDays(start, end) {
-        return Math.round((new Date(end) - new Date(start)) / 86400000) + 1;
-    }
-
-    function renderStats() {
-        const stats = { Fabiano:0, Salvatore:0, Insieme:0 };
-        bookings.filter(b => b.approved).forEach(b => { if (stats[b.user] !== undefined) stats[b.user] += calcDays(b.startDate, b.endDate); });
-        const total = stats.Fabiano + stats.Salvatore + stats.Insieme;
-        const colors = { Fabiano:'#2563eb', Salvatore:'#7c3aed', Insieme:'#059669' };
-        const emoji  = { Fabiano:'👤', Salvatore:'👤', Insieme:'👬' };
-        const container = document.getElementById('stats-container');
-        if (!container) return;
-        if (total === 0) { container.innerHTML = '<p style="color:#94a3b8; text-align:center;">Ancora nessun dato!</p>'; return; }
-        container.innerHTML = Object.entries(stats).map(([name, days]) => {
-            const pct = Math.round(days / total * 100);
-            return `<div style="margin-bottom:1.2rem;">
-                <div style="display:flex; justify-content:space-between; margin-bottom:0.4rem;">
-                    <span style="font-weight:700;">${emoji[name]} ${name}</span>
-                    <span style="font-weight:800; color:${colors[name]};">${days} giorni (${pct}%)</span>
+        return `<div class="mov-row">
+            <div style="display:flex;align-items:center;">
+                <span class="mov-icon">${item.cat ? item.cat.split(' ')[0] : '📋'}</span>
+                <div>
+                    <div class="mov-label">${item.desc}</div>
+                    <div class="mov-sub">${item.date} · ${item.cat || ''}</div>
                 </div>
-                <div style="background:#e2e8f0; border-radius:50px; height:12px; overflow:hidden;">
-                    <div style="width:${pct}%; height:100%; background:${colors[name]}; border-radius:50px; transition:width 0.6s ease;"></div>
-                </div>
-            </div>`;
-        }).join('') + `<p style="font-size:0.85rem; color:#94a3b8; margin-top:0.5rem; text-align:right;">Totale: <strong>${total} giorni</strong> dall'1 gen 2026</p>`;
-    }
+            </div>
+            <div class="mov-amount" style="color:var(--red);">-€${item.amount.toFixed(2)}</div>
+        </div>`;
+    }).join('');
+}
 
-    // --- DOWNLOAD ---
-    function downloadApp() {
-        const blob = new Blob([document.documentElement.outerHTML], { type:'text/html' });
-        const a = document.createElement('a');
-        a.href = URL.createObjectURL(blob);
-        a.download = 'la-nostra-macchina.html';
-        a.click();
-        URL.revokeObjectURL(a.href);
-        notify('⬇️ Eccola! Aprila nel browser e via.');
-    }
+// ─── CALENDAR ────────────────────────────────────────────────
+function renderCalendar() {
+    const container = document.getElementById('calendar-container');
+    container.innerHTML = '';
+    const now = new Date();
+    for (let i = 0; i < 3; i++)
+        container.appendChild(createMonthElement(new Date(now.getFullYear(), now.getMonth() + i, 1)));
+}
 
-    // --- INIT ---
-    renderCalendar();
-    renderStats();
-    renderSaldo();
-    renderExpenses();
+function createMonthElement(date) {
+    const wrap = document.createElement('div');
+    wrap.className = 'month-view';
+    wrap.innerHTML = `<div class="month-title">${new Intl.DateTimeFormat('it-IT',{month:'long',year:'numeric'}).format(date)}</div>`;
+    const grid = document.createElement('div');
+    grid.className = 'calendar-grid';
+    ['L','M','M','G','V','S','D'].forEach(d => { grid.innerHTML += `<div class="day-head">${d}</div>`; });
+    const yr = date.getFullYear(), mo = date.getMonth();
+    let fd = new Date(yr, mo, 1).getDay(); fd = fd === 0 ? 6 : fd - 1;
+    const dim = new Date(yr, mo + 1, 0).getDate();
+    const todayStr = new Date().toISOString().split('T')[0];
+    for (let i = 0; i < fd; i++) grid.innerHTML += `<div class="day empty"></div>`;
+    for (let d = 1; d <= dim; d++) {
+        const ds = `${yr}-${String(mo+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+        const bk = bookings.find(b => ds >= b.startDate && ds <= b.endDate);
+        const el = document.createElement('div');
+        el.className = 'day'; el.dataset.date = ds;
+        if (ds === todayStr) el.classList.add('today');
+        if (bk) {
+            el.classList.add(bk.approved ? 'booked-approved' : 'booked-pending');
+            el.innerHTML = `<span class="day-num">${d}</span><span class="day-info">${bk.user}</span>`;
+            el.onclick = () => handleBookingClick(bk);
+        } else {
+            el.innerHTML = `<span class="day-num">${d}</span>`;
+            el.onclick = () => handleDayClick(ds);
+        }
+        grid.appendChild(el);
+    }
+    wrap.appendChild(grid);
+    return wrap;
+}
+
+// ─── SELECTION ───────────────────────────────────────────────
+function handleDayClick(date) {
+    if (!tempStart || (tempStart && tempEnd)) {
+        tempStart = date; tempEnd = null;
+        notify('📍 Dal ' + formatDate(date) + ' — tocca il giorno in cui la riporti!');
+    } else {
+        if (date < tempStart) { tempStart = date; notify('📍 Ok, parto prima: ' + formatDate(date)); }
+        else {
+            if (bookings.some(b => tempStart <= b.endDate && date >= b.startDate)) { notify('😬 Quei giorni sono già occupati!'); return; }
+            tempEnd = date; notify('👍 Perfetto! Ora conferma.');
+        }
+    }
+    updateSelectionUI();
+}
+
+function updateSelectionUI() {
+    document.querySelectorAll('.day:not(.empty)').forEach(el => {
+        const d = el.dataset.date;
+        el.classList.remove('selecting','selection-start','selection-end');
+        if (tempStart && d === tempStart) el.classList.add('selection-start');
+        if (tempEnd   && d === tempEnd)   el.classList.add('selection-end');
+        if (tempStart && tempEnd && d > tempStart && d < tempEnd) el.classList.add('selecting');
+    });
+    const bar = document.getElementById('selection-bar');
+    const info = document.getElementById('sel-info');
+    if (tempStart) {
+        bar.style.display = 'block';
+        info.innerText = tempEnd ? `${formatDate(tempStart)} ➔ ${formatDate(tempEnd)}` : `Dal ${formatDate(tempStart)}... fino a quando?`;
+    } else { bar.style.display = 'none'; }
+}
+
+function resetSelection() { tempStart = null; tempEnd = null; updateSelectionUI(); }
+
+function formatDate(iso) {
+    return new Date(iso).toLocaleDateString('it-IT', { day:'numeric', month:'short' });
+}
+
+// ─── BOOKING ─────────────────────────────────────────────────
+function openBookingForm() {
+    if (!tempStart || !tempEnd) { notify('⚠️ Tocca prima il giorno in cui la riporti!'); return; }
+    document.getElementById('booking-modal').style.display = 'flex';
+}
+function closeModal() { document.getElementById('booking-modal').style.display = 'none'; }
+
+function saveBooking() {
+    const user = document.getElementById('book-user').value;
+    const note = document.getElementById('book-note').value;
+    bookings.push({ id:Date.now(), startDate:tempStart, endDate:tempEnd, user, note, approved:user==='Insieme' });
+    save(); closeModal(); resetSelection(); renderCalendar(); renderStats();
+    if (user === 'Insieme') notify('✅ Uscita di coppia! Già confermata 👬');
+    else notify(`📩 Richiesta mandata! Aspetta che ${user==='Fabiano'?'Salvatore':'Fabiano'} confermi.`);
+}
+
+function handleBookingClick(bk) {
+    if (!bk.approved) {
+        const altro = bk.user === 'Fabiano' ? 'Salvatore' : 'Fabiano';
+        if (confirm(`${bk.user} vuole la macchina dal ${formatDate(bk.startDate)} al ${formatDate(bk.endDate)}${bk.note?' — '+bk.note:''}.\n\nSei ${altro}? Confermi?`)) {
+            bk.approved = true; save(); renderCalendar(); renderStats();
+            notify(`✅ ${altro} ha confermato!`);
+        }
+    } else {
+        notify(bk.note ? `🚗 ${bk.user} — ${bk.note}` : `🚗 Macchina di ${bk.user} questi giorni`);
+    }
+}
+
+// ─── DOWNLOAD ────────────────────────────────────────────────
+function downloadApp() {
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(new Blob([document.documentElement.outerHTML], {type:'text/html'}));
+    a.download = 'la-nostra-macchina.html';
+    a.click();
+    URL.revokeObjectURL(a.href);
+    notify('⬇️ Eccola! Aprila nel browser e via.');
+}
+
+// ─── INIT ────────────────────────────────────────────────────
+renderCalendar();
+renderStats();
 </script>
-
 </body>
 </html>
