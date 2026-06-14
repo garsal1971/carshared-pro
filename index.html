@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>La Nostra Macchina 🚗</title>
+    <title>In Attesa della Pensione 🚗</title>
     <style>
         :root {
             --primary: #2563eb;
@@ -111,7 +111,7 @@
 <body>
 
 <header>
-    <h1>🚗 La Nostra Macchina</h1>
+    <h1>🚗 In Attesa della Pensione</h1>
     <p>Fabiano & Salvatore — conto gestione condiviso</p>
     <button onclick="downloadApp()" style="margin-top:.9rem;padding:.5rem 1.2rem;background:white;color:#2563eb;border:none;border-radius:50px;font-weight:700;font-size:.85rem;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.15);">⬇️ Scarica App</button>
 </header>
@@ -615,7 +615,7 @@ function handleBookingClick(bk) {
 function downloadApp() {
     const a = document.createElement('a');
     a.href = URL.createObjectURL(new Blob([document.documentElement.outerHTML], {type:'text/html'}));
-    a.download = 'la-nostra-macchina.html';
+    a.download = 'in-attesa-della-pensione.html';
     a.click();
     URL.revokeObjectURL(a.href);
     notify('⬇️ Eccola! Aprila nel browser e via.');
