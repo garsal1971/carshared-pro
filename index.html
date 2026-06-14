@@ -257,6 +257,11 @@
             </div>
         </div>
 
+        <div class="card">
+            <h2>📊 Chi ha usato di più la macchina?</h2>
+            <div id="stats-container"></div>
+        </div>
+
         <div id="selection-bar" class="card" style="display: none; position: sticky; bottom: 1rem; z-index: 90; border: 2px solid var(--primary-color);">
             <div style="display: flex; justify-content: space-between; align-items: center; gap: 1rem;">
                 <div>
@@ -285,7 +290,10 @@
                         <input type="number" id="exp-amount" step="0.01" required>
                     </div>
                 </div>
-                <button type="submit" class="btn btn-primary">Ho pagato io 💳</button>
+                <div style="display:flex; gap:0.75rem; flex-wrap:wrap;">
+                    <button type="submit" class="btn btn-primary" style="flex:1; min-width:160px;">Ho pagato io 💳</button>
+                    <button type="button" onclick="notify('📊 Importazione Excel — prossimamente!')" class="btn" style="flex:1; min-width:160px; background:#16a34a; color:white;">📂 Carica da Excel</button>
+                </div>
             </form>
         </div>
 
@@ -322,7 +330,23 @@
 <div id="notif-box"></div>
 
 <script>
-    let bookings = JSON.parse(localStorage.getItem('cs_bookings')) || [];
+    const DEMO_BOOKINGS = [
+        { id:1, startDate:'2026-01-03', endDate:'2026-01-05', user:'Fabiano',   note:'Giro in città',          approved:true },
+        { id:2, startDate:'2026-01-10', endDate:'2026-01-13', user:'Salvatore', note:'Weekend fuori',           approved:true },
+        { id:3, startDate:'2026-01-20', endDate:'2026-01-21', user:'Insieme',   note:'Escursione in montagna',  approved:true },
+        { id:4, startDate:'2026-02-03', endDate:'2026-02-08', user:'Fabiano',   note:'Settimana bianca',        approved:true },
+        { id:5, startDate:'2026-02-14', endDate:'2026-02-16', user:'Salvatore', note:'San Valentino fuori',     approved:true },
+        { id:6, startDate:'2026-03-07', endDate:'2026-03-09', user:'Fabiano',   note:'Visita ai genitori',      approved:true },
+        { id:7, startDate:'2026-03-21', endDate:'2026-03-23', user:'Insieme',   note:'Gita al mare',            approved:true },
+        { id:8, startDate:'2026-04-05', endDate:'2026-04-10', user:'Salvatore', note:'Pasqua in famiglia',      approved:true },
+        { id:9, startDate:'2026-04-18', endDate:'2026-04-20', user:'Fabiano',   note:'Ponte di aprile',         approved:true },
+        { id:10,startDate:'2026-05-02', endDate:'2026-05-05', user:'Salvatore', note:'Primo maggio',            approved:true },
+        { id:11,startDate:'2026-05-17', endDate:'2026-05-18', user:'Insieme',   note:'Sagra del paese',         approved:true },
+        { id:12,startDate:'2026-06-01', endDate:'2026-06-03', user:'Fabiano',   note:'Ponte della Repubblica',  approved:true },
+    ];
+
+    let bookings = JSON.parse(localStorage.getItem('cs_bookings'));
+    if (!bookings) { bookings = DEMO_BOOKINGS; localStorage.setItem('cs_bookings', JSON.stringify(bookings)); }
     let expenses = JSON.parse(localStorage.getItem('cs_expenses')) || [];
     let tempStart = null;
     let tempEnd = null;
@@ -346,8 +370,38 @@
         document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
         document.getElementById('tab-' + tab).classList.add('active');
         document.getElementById('nav-' + (tab === 'calendar' ? 'cal' : 'exp')).classList.add('active');
-        if(tab === 'calendar') { renderCalendar(); resetSelection(); }
+        if(tab === 'calendar') { renderCalendar(); resetSelection(); renderStats(); }
         else renderExpenses();
+    }
+
+    function calcDays(start, end) {
+        return Math.round((new Date(end) - new Date(start)) / 86400000) + 1;
+    }
+
+    function renderStats() {
+        const stats = { Fabiano: 0, Salvatore: 0, Insieme: 0 };
+        bookings.filter(b => b.approved).forEach(b => {
+            if (stats[b.user] !== undefined) stats[b.user] += calcDays(b.startDate, b.endDate);
+        });
+        const total = stats.Fabiano + stats.Salvatore + stats.Insieme;
+        const colors = { Fabiano: '#2563eb', Salvatore: '#7c3aed', Insieme: '#059669' };
+        const emoji  = { Fabiano: '👤', Salvatore: '👤', Insieme: '👬' };
+        const container = document.getElementById('stats-container');
+        if (!container) return;
+        if (total === 0) { container.innerHTML = '<p style="color:#94a3b8; text-align:center;">Ancora nessun dato!</p>'; return; }
+        container.innerHTML = Object.entries(stats).map(([name, days]) => {
+            const pct = total > 0 ? Math.round(days / total * 100) : 0;
+            return `
+            <div style="margin-bottom:1.2rem;">
+                <div style="display:flex; justify-content:space-between; margin-bottom:0.4rem;">
+                    <span style="font-weight:700;">${emoji[name]} ${name}</span>
+                    <span style="font-weight:800; color:${colors[name]};">${days} giorni (${pct}%)</span>
+                </div>
+                <div style="background:#e2e8f0; border-radius:50px; height:12px; overflow:hidden;">
+                    <div style="width:${pct}%; height:100%; background:${colors[name]}; border-radius:50px; transition:width 0.6s ease;"></div>
+                </div>
+            </div>`;
+        }).join('') + `<p style="font-size:0.85rem; color:#94a3b8; margin-top:0.5rem; text-align:right;">Totale: <strong>${total} giorni</strong> dall'1 gen 2026</p>`;
     }
 
     function renderCalendar() {
@@ -552,6 +606,7 @@
     }
 
     renderCalendar();
+    renderStats();
 </script>
 
 </body>
