@@ -88,15 +88,8 @@
 
         h2 { margin-bottom: 1.5rem; color: var(--text-color); font-size: 1.25rem; }
 
-        .months-container {
-            display: flex;
-            flex-direction: column;
-            gap: 2rem;
-        }
-
-        .month-view {
-            animation: fadeIn 0.4s ease;
-        }
+        .months-container { display: flex; flex-direction: column; gap: 2rem; }
+        .month-view { animation: fadeIn 0.4s ease; }
 
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(10px); }
@@ -144,10 +137,8 @@
         .day.empty { visibility: hidden; pointer-events: none; }
         .day:hover:not(.booked):not(.selecting) { background: #f8fafc; }
         .day.today { border: 2px solid var(--primary-color); color: var(--primary-color); }
-
         .day.booked-pending { background-color: #fef3c7; border-color: #f59e0b; color: #92400e; }
         .day.booked-approved { background-color: #dbeafe; border-color: #3b82f6; color: #1e40af; }
-
         .day.selecting { background-color: var(--selection-color); border-color: var(--primary-color); }
         .day.selection-start, .day.selection-end {
             background-color: var(--primary-color) !important;
@@ -168,12 +159,12 @@
         .legend-item { display: flex; align-items: center; gap: 0.5rem; }
         .dot { width: 12px; height: 12px; border-radius: 3px; }
 
-        .expense-form-grid {
+        .form-grid-3 {
             display: grid;
-            grid-template-columns: 1fr 1fr;
+            grid-template-columns: 1fr 1fr 1fr;
             gap: 1rem;
         }
-        @media (max-width: 600px) { .expense-form-grid { grid-template-columns: 1fr; } }
+        @media (max-width: 600px) { .form-grid-3 { grid-template-columns: 1fr; } }
 
         .form-group { margin-bottom: 1.25rem; }
         label { display: block; margin-bottom: 0.5rem; font-weight: 600; font-size: 0.9rem; }
@@ -185,7 +176,7 @@
             font-size: 1rem;
             transition: border-color 0.2s;
         }
-        input:focus { border-color: var(--primary-color); outline: none; }
+        input:focus, select:focus { border-color: var(--primary-color); outline: none; }
 
         .btn {
             padding: 1rem;
@@ -198,6 +189,26 @@
         }
         .btn-primary { background: var(--primary-color); color: white; }
         .btn-primary:active { transform: scale(0.98); }
+
+        .vers-btn {
+            flex: 1;
+            padding: 0.9rem;
+            border-radius: 12px;
+            border: none;
+            font-weight: 700;
+            cursor: pointer;
+            font-size: 0.95rem;
+            transition: all 0.2s;
+        }
+        .vers-btn:active { transform: scale(0.97); }
+
+        .saldo-box {
+            text-align: center;
+            padding: 1.2rem;
+            border-radius: 14px;
+            font-size: 1.1rem;
+            font-weight: 800;
+        }
 
         #notif-box {
             position: fixed;
@@ -217,6 +228,7 @@
             font-weight: 600;
             font-size: 0.9rem;
             animation: slideDown 0.3s ease forwards;
+            white-space: nowrap;
         }
         @keyframes slideDown {
             from { transform: translateY(-50px); opacity: 0; }
@@ -249,11 +261,10 @@
     <section id="tab-calendar" class="tab-content active">
         <div class="card">
             <div id="calendar-container" class="months-container"></div>
-
             <div class="legend">
-                <div class="legend-item"><div class="dot" style="background: #2563eb;"></div> Confermato</div>
-                <div class="legend-item"><div class="dot" style="background: #f59e0b;"></div> Da confermare</div>
-                <div class="legend-item"><div class="dot" style="border: 2px solid #2563eb;"></div> Oggi</div>
+                <div class="legend-item"><div class="dot" style="background:#2563eb;"></div> Confermato</div>
+                <div class="legend-item"><div class="dot" style="background:#f59e0b;"></div> Da confermare</div>
+                <div class="legend-item"><div class="dot" style="border:2px solid #2563eb;"></div> Oggi</div>
             </div>
         </div>
 
@@ -262,14 +273,12 @@
             <div id="stats-container"></div>
         </div>
 
-        <div id="selection-bar" class="card" style="display: none; position: sticky; bottom: 1rem; z-index: 90; border: 2px solid var(--primary-color);">
-            <div style="display: flex; justify-content: space-between; align-items: center; gap: 1rem;">
-                <div>
-                    <span id="sel-info" style="font-weight: 800; font-size: 0.9rem;">Scegli i giorni...</span>
-                </div>
-                <div style="display: flex; gap: 0.5rem;">
-                    <button class="btn" style="background: #e2e8f0; width: auto; padding: 0.6rem 1rem;" onclick="resetSelection()">Lascia perdere</button>
-                    <button class="btn btn-primary" style="width: auto; padding: 0.6rem 1rem;" onclick="openBookingForm()">Prendo io! 🙋</button>
+        <div id="selection-bar" class="card" style="display:none; position:sticky; bottom:1rem; z-index:90; border:2px solid var(--primary-color);">
+            <div style="display:flex; justify-content:space-between; align-items:center; gap:1rem;">
+                <span id="sel-info" style="font-weight:800; font-size:0.9rem;">Scegli i giorni...</span>
+                <div style="display:flex; gap:0.5rem;">
+                    <button class="btn" style="background:#e2e8f0; width:auto; padding:0.6rem 1rem;" onclick="resetSelection()">Lascia perdere</button>
+                    <button class="btn btn-primary" style="width:auto; padding:0.6rem 1rem;" onclick="openBookingForm()">Prendo io! 🙋</button>
                 </div>
             </div>
         </div>
@@ -277,37 +286,75 @@
 
     <!-- TAB SPESE -->
     <section id="tab-expenses" class="tab-content">
+
+        <!-- SALDO -->
+        <div class="card">
+            <h2>💰 Saldo tra noi</h2>
+            <div id="saldo-box"></div>
+        </div>
+
+        <!-- NUOVA SPESA -->
         <div class="card">
             <h2>Aggiungi una spesa</h2>
             <form id="exp-form">
-                <div class="expense-form-grid">
+                <div class="form-grid-3">
                     <div class="form-group">
                         <label>Cosa hai pagato?</label>
                         <input type="text" id="exp-desc" placeholder="es. Pieno benzina, bollo..." required>
                     </div>
                     <div class="form-group">
-                        <label>Quanto hai tirato fuori (€)?</label>
-                        <input type="number" id="exp-amount" step="0.01" required>
+                        <label>Quanto (€)?</label>
+                        <input type="number" id="exp-amount" step="0.01" min="0.01" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Chi ha pagato?</label>
+                        <select id="exp-payer">
+                            <option value="Fabiano">Fabiano</option>
+                            <option value="Salvatore">Salvatore</option>
+                            <option value="Entrambi">Entrambi (split)</option>
+                        </select>
                     </div>
                 </div>
                 <div style="display:flex; gap:0.75rem; flex-wrap:wrap;">
-                    <button type="submit" class="btn btn-primary" style="flex:1; min-width:160px;">Ho pagato io 💳</button>
-                    <button type="button" onclick="notify('📊 Importazione Excel — prossimamente!')" class="btn" style="flex:1; min-width:160px; background:#16a34a; color:white;">📂 Carica da Excel</button>
+                    <button type="submit" class="btn btn-primary" style="flex:1; min-width:140px;">Aggiungi spesa 💳</button>
+                    <button type="button" onclick="notify('📊 Importazione Excel — prossimamente!')" class="btn" style="flex:1; min-width:140px; background:#16a34a; color:white;">📂 Carica da Excel</button>
                 </div>
             </form>
         </div>
 
+        <!-- VERSAMENTO -->
         <div class="card">
-            <h2>Quello che abbiamo speso</h2>
+            <h2>💸 Versamento tra noi</h2>
+            <div class="form-group">
+                <label>Quanto ha versato (€)?</label>
+                <input type="number" id="vers-amount" step="0.01" min="0.01" placeholder="es. 50.00">
+            </div>
+            <div class="form-group">
+                <label>Nota (facoltativo)</label>
+                <input type="text" id="vers-note" placeholder="es. Saldo marzo, rimborso benzina...">
+            </div>
+            <div style="display:flex; gap:0.75rem;">
+                <button class="vers-btn" style="background:#dbeafe; color:#1e40af;" onclick="saveVersamento('Fabiano','Salvatore')">
+                    Fabiano → Salvatore
+                </button>
+                <button class="vers-btn" style="background:#ede9fe; color:#5b21b6;" onclick="saveVersamento('Salvatore','Fabiano')">
+                    Salvatore → Fabiano
+                </button>
+            </div>
+        </div>
+
+        <!-- STORICO -->
+        <div class="card">
+            <h2>Storico movimenti</h2>
             <div id="expenses-list"></div>
         </div>
     </section>
 </main>
 
 <!-- MODAL PRENOTAZIONE -->
-<div id="booking-modal" style="display: none; position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); z-index:200; align-items:center; justify-content:center;">
-    <div class="card" style="width: 90%; max-width: 400px; margin: 0;">
-        <h2 id="modal-title">Chi la prende? 🚗</h2>
+<div id="booking-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); z-index:200; align-items:center; justify-content:center;">
+    <div class="card" style="width:90%; max-width:400px; margin:0;">
+        <h2>Chi la prende? 🚗</h2>
         <div class="form-group">
             <label>Sono io oppure...</label>
             <select id="book-user">
@@ -320,8 +367,8 @@
             <label>Dove vai? (facoltativo)</label>
             <input type="text" id="book-note" placeholder="es. Al mare, dal medico, giro commissioni...">
         </div>
-        <div style="display: flex; gap: 1rem;">
-            <button class="btn" style="background: #e2e8f0;" onclick="closeModal()">Torno indietro</button>
+        <div style="display:flex; gap:1rem;">
+            <button class="btn" style="background:#e2e8f0;" onclick="closeModal()">Torno indietro</button>
             <button class="btn btn-primary" onclick="saveBooking()">Prenoto! ✅</button>
         </div>
     </div>
@@ -330,48 +377,57 @@
 <div id="notif-box"></div>
 
 <script>
+    // --- DEMO DATA ---
     const DEMO_BOOKINGS = [
-        { id:1, startDate:'2026-01-03', endDate:'2026-01-05', user:'Fabiano',   note:'Giro in città',          approved:true },
-        { id:2, startDate:'2026-01-10', endDate:'2026-01-13', user:'Salvatore', note:'Weekend fuori',           approved:true },
-        { id:3, startDate:'2026-01-20', endDate:'2026-01-21', user:'Insieme',   note:'Escursione in montagna',  approved:true },
-        { id:4, startDate:'2026-02-03', endDate:'2026-02-08', user:'Fabiano',   note:'Settimana bianca',        approved:true },
-        { id:5, startDate:'2026-02-14', endDate:'2026-02-16', user:'Salvatore', note:'San Valentino fuori',     approved:true },
-        { id:6, startDate:'2026-03-07', endDate:'2026-03-09', user:'Fabiano',   note:'Visita ai genitori',      approved:true },
-        { id:7, startDate:'2026-03-21', endDate:'2026-03-23', user:'Insieme',   note:'Gita al mare',            approved:true },
-        { id:8, startDate:'2026-04-05', endDate:'2026-04-10', user:'Salvatore', note:'Pasqua in famiglia',      approved:true },
-        { id:9, startDate:'2026-04-18', endDate:'2026-04-20', user:'Fabiano',   note:'Ponte di aprile',         approved:true },
-        { id:10,startDate:'2026-05-02', endDate:'2026-05-05', user:'Salvatore', note:'Primo maggio',            approved:true },
-        { id:11,startDate:'2026-05-17', endDate:'2026-05-18', user:'Insieme',   note:'Sagra del paese',         approved:true },
-        { id:12,startDate:'2026-06-01', endDate:'2026-06-03', user:'Fabiano',   note:'Ponte della Repubblica',  approved:true },
+        { id:1,  startDate:'2026-01-03', endDate:'2026-01-05', user:'Fabiano',   note:'Giro in città',           approved:true },
+        { id:2,  startDate:'2026-01-10', endDate:'2026-01-13', user:'Salvatore', note:'Weekend fuori',            approved:true },
+        { id:3,  startDate:'2026-01-20', endDate:'2026-01-21', user:'Insieme',   note:'Escursione in montagna',   approved:true },
+        { id:4,  startDate:'2026-02-03', endDate:'2026-02-08', user:'Fabiano',   note:'Settimana bianca',         approved:true },
+        { id:5,  startDate:'2026-02-14', endDate:'2026-02-16', user:'Salvatore', note:'San Valentino fuori',      approved:true },
+        { id:6,  startDate:'2026-03-07', endDate:'2026-03-09', user:'Fabiano',   note:'Visita ai genitori',       approved:true },
+        { id:7,  startDate:'2026-03-21', endDate:'2026-03-23', user:'Insieme',   note:'Gita al mare',             approved:true },
+        { id:8,  startDate:'2026-04-05', endDate:'2026-04-10', user:'Salvatore', note:'Pasqua in famiglia',       approved:true },
+        { id:9,  startDate:'2026-04-18', endDate:'2026-04-20', user:'Fabiano',   note:'Ponte di aprile',          approved:true },
+        { id:10, startDate:'2026-05-02', endDate:'2026-05-05', user:'Salvatore', note:'Primo maggio',             approved:true },
+        { id:11, startDate:'2026-05-17', endDate:'2026-05-18', user:'Insieme',   note:'Sagra del paese',          approved:true },
+        { id:12, startDate:'2026-06-01', endDate:'2026-06-03', user:'Fabiano',   note:'Ponte della Repubblica',   approved:true },
     ];
 
     const DEMO_EXPENSES = [
-        { id:101, desc:'Pieno benzina',            amount:65.00, date:'03/01/2026' },
-        { id:102, desc:'Autostrada A1',             amount:12.50, date:'10/01/2026' },
-        { id:103, desc:'Pieno benzina',            amount:61.20, date:'20/01/2026' },
-        { id:104, desc:'Cambio olio + filtri',      amount:89.00, date:'03/02/2026' },
-        { id:105, desc:'Pieno benzina',            amount:67.40, date:'08/02/2026' },
-        { id:106, desc:'Parcheggio aeroporto',      amount:28.00, date:'14/02/2026' },
-        { id:107, desc:'Pieno benzina',            amount:63.80, date:'07/03/2026' },
-        { id:108, desc:'Lavaggio auto',             amount:15.00, date:'21/03/2026' },
-        { id:109, desc:'Pieno benzina',            amount:70.00, date:'05/04/2026' },
-        { id:110, desc:'Pedaggi autostrada',        amount:18.60, date:'18/04/2026' },
-        { id:111, desc:'Pieno benzina',            amount:64.50, date:'02/05/2026' },
-        { id:112, desc:'Revisione annuale',         amount:55.00, date:'17/05/2026' },
-        { id:113, desc:'Pieno benzina',            amount:68.90, date:'01/06/2026' },
-        { id:114, desc:'Bollo auto',               amount:148.00, date:'10/06/2026' },
+        { id:101, desc:'Pieno benzina',          amount:65.00,  date:'03/01/2026', pagato_da:'Fabiano'   },
+        { id:102, desc:'Autostrada A1',           amount:12.50,  date:'10/01/2026', pagato_da:'Salvatore' },
+        { id:103, desc:'Pieno benzina',          amount:61.20,  date:'20/01/2026', pagato_da:'Fabiano'   },
+        { id:104, desc:'Cambio olio + filtri',    amount:89.00,  date:'03/02/2026', pagato_da:'Salvatore' },
+        { id:105, desc:'Pieno benzina',          amount:67.40,  date:'08/02/2026', pagato_da:'Fabiano'   },
+        { id:106, desc:'Parcheggio aeroporto',    amount:28.00,  date:'14/02/2026', pagato_da:'Salvatore' },
+        { id:107, desc:'Pieno benzina',          amount:63.80,  date:'07/03/2026', pagato_da:'Fabiano'   },
+        { id:108, desc:'Lavaggio auto',           amount:15.00,  date:'21/03/2026', pagato_da:'Entrambi'  },
+        { id:109, desc:'Pieno benzina',          amount:70.00,  date:'05/04/2026', pagato_da:'Salvatore' },
+        { id:110, desc:'Pedaggi autostrada',      amount:18.60,  date:'18/04/2026', pagato_da:'Fabiano'   },
+        { id:111, desc:'Pieno benzina',          amount:64.50,  date:'02/05/2026', pagato_da:'Salvatore' },
+        { id:112, desc:'Revisione annuale',       amount:55.00,  date:'17/05/2026', pagato_da:'Entrambi'  },
+        { id:113, desc:'Pieno benzina',          amount:68.90,  date:'01/06/2026', pagato_da:'Fabiano'   },
+        { id:114, desc:'Bollo auto',             amount:148.00, date:'10/06/2026', pagato_da:'Salvatore' },
     ];
 
-    let bookings = JSON.parse(localStorage.getItem('cs_bookings'));
-    if (!bookings) { bookings = DEMO_BOOKINGS; localStorage.setItem('cs_bookings', JSON.stringify(bookings)); }
-    let expenses = JSON.parse(localStorage.getItem('cs_expenses'));
-    if (!expenses) { expenses = DEMO_EXPENSES; localStorage.setItem('cs_expenses', JSON.stringify(expenses)); }
-    let tempStart = null;
-    let tempEnd = null;
+    const DEMO_VERSAMENTI = [
+        { id:201, da:'Fabiano',   a:'Salvatore', amount:30.00, date:'31/03/2026', note:'Saldo primo trimestre' },
+        { id:202, da:'Salvatore', a:'Fabiano',   amount:20.00, date:'30/04/2026', note:'Rimborso pedaggi aprile' },
+    ];
+
+    // --- STATE ---
+    let bookings    = JSON.parse(localStorage.getItem('cs_bookings'));
+    let expenses    = JSON.parse(localStorage.getItem('cs_expenses'));
+    let versamenti  = JSON.parse(localStorage.getItem('cs_versamenti'));
+    if (!bookings)   { bookings   = DEMO_BOOKINGS;   localStorage.setItem('cs_bookings',   JSON.stringify(bookings)); }
+    if (!expenses)   { expenses   = DEMO_EXPENSES;   localStorage.setItem('cs_expenses',   JSON.stringify(expenses)); }
+    if (!versamenti) { versamenti = DEMO_VERSAMENTI; localStorage.setItem('cs_versamenti', JSON.stringify(versamenti)); }
+    let tempStart = null, tempEnd = null;
 
     const save = () => {
-        localStorage.setItem('cs_bookings', JSON.stringify(bookings));
-        localStorage.setItem('cs_expenses', JSON.stringify(expenses));
+        localStorage.setItem('cs_bookings',   JSON.stringify(bookings));
+        localStorage.setItem('cs_expenses',   JSON.stringify(expenses));
+        localStorage.setItem('cs_versamenti', JSON.stringify(versamenti));
     };
 
     function notify(msg) {
@@ -380,77 +436,151 @@
         t.className = 'toast';
         t.innerText = msg;
         box.appendChild(t);
-        setTimeout(() => t.remove(), 2500);
+        setTimeout(() => t.remove(), 2800);
     }
 
+    // --- TABS ---
     function switchTab(tab) {
         document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
         document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
         document.getElementById('tab-' + tab).classList.add('active');
         document.getElementById('nav-' + (tab === 'calendar' ? 'cal' : 'exp')).classList.add('active');
-        if(tab === 'calendar') { renderCalendar(); resetSelection(); renderStats(); }
-        else renderExpenses();
+        if (tab === 'calendar') { renderCalendar(); resetSelection(); renderStats(); }
+        else { renderSaldo(); renderExpenses(); }
     }
 
-    function calcDays(start, end) {
-        return Math.round((new Date(end) - new Date(start)) / 86400000) + 1;
-    }
-
-    function renderStats() {
-        const stats = { Fabiano: 0, Salvatore: 0, Insieme: 0 };
-        bookings.filter(b => b.approved).forEach(b => {
-            if (stats[b.user] !== undefined) stats[b.user] += calcDays(b.startDate, b.endDate);
+    // --- SALDO ---
+    function calcSaldo() {
+        let fabPaid = 0, salPaid = 0;
+        expenses.forEach(ex => {
+            if (ex.pagato_da === 'Fabiano')       fabPaid += ex.amount;
+            else if (ex.pagato_da === 'Salvatore') salPaid += ex.amount;
+            else { fabPaid += ex.amount / 2; salPaid += ex.amount / 2; }
         });
-        const total = stats.Fabiano + stats.Salvatore + stats.Insieme;
-        const colors = { Fabiano: '#2563eb', Salvatore: '#7c3aed', Insieme: '#059669' };
-        const emoji  = { Fabiano: '👤', Salvatore: '👤', Insieme: '👬' };
-        const container = document.getElementById('stats-container');
-        if (!container) return;
-        if (total === 0) { container.innerHTML = '<p style="color:#94a3b8; text-align:center;">Ancora nessun dato!</p>'; return; }
-        container.innerHTML = Object.entries(stats).map(([name, days]) => {
-            const pct = total > 0 ? Math.round(days / total * 100) : 0;
-            return `
-            <div style="margin-bottom:1.2rem;">
-                <div style="display:flex; justify-content:space-between; margin-bottom:0.4rem;">
-                    <span style="font-weight:700;">${emoji[name]} ${name}</span>
-                    <span style="font-weight:800; color:${colors[name]};">${days} giorni (${pct}%)</span>
-                </div>
-                <div style="background:#e2e8f0; border-radius:50px; height:12px; overflow:hidden;">
-                    <div style="width:${pct}%; height:100%; background:${colors[name]}; border-radius:50px; transition:width 0.6s ease;"></div>
-                </div>
-            </div>`;
-        }).join('') + `<p style="font-size:0.85rem; color:#94a3b8; margin-top:0.5rem; text-align:right;">Totale: <strong>${total} giorni</strong> dall'1 gen 2026</p>`;
+        // net > 0 → Salvatore deve a Fabiano; net < 0 → Fabiano deve a Salvatore
+        let net = (fabPaid - salPaid) / 2;
+        versamenti.forEach(v => {
+            if (v.da === 'Fabiano'   && v.a === 'Salvatore') net += v.amount;
+            if (v.da === 'Salvatore' && v.a === 'Fabiano')   net -= v.amount;
+        });
+        return net;
     }
 
+    function renderSaldo() {
+        const net = calcSaldo();
+        const box = document.getElementById('saldo-box');
+        if (Math.abs(net) < 0.01) {
+            box.innerHTML = `<div class="saldo-box" style="background:#dcfce7; color:#166534;">🎉 Siete in pari! Nessuno deve niente.</div>`;
+        } else if (net > 0) {
+            box.innerHTML = `<div class="saldo-box" style="background:#ede9fe; color:#5b21b6;">Salvatore deve <strong>€${net.toFixed(2)}</strong> a Fabiano 💶</div>`;
+        } else {
+            box.innerHTML = `<div class="saldo-box" style="background:#dbeafe; color:#1e40af;">Fabiano deve <strong>€${Math.abs(net).toFixed(2)}</strong> a Salvatore 💶</div>`;
+        }
+    }
+
+    // --- VERSAMENTO ---
+    function saveVersamento(da, a) {
+        const amtEl = document.getElementById('vers-amount');
+        const noteEl = document.getElementById('vers-note');
+        const amt = parseFloat(amtEl.value);
+        if (!amt || amt <= 0) { notify('⚠️ Inserisci un importo!'); return; }
+        versamenti.push({ id: Date.now(), da, a, amount: amt, date: new Date().toLocaleDateString('it-IT'), note: noteEl.value });
+        save();
+        amtEl.value = '';
+        noteEl.value = '';
+        renderSaldo();
+        renderExpenses();
+        notify(`✅ ${da} ha versato €${amt.toFixed(2)} a ${a}`);
+    }
+
+    // --- EXPENSES ---
+    document.getElementById('exp-form').onsubmit = function(e) {
+        e.preventDefault();
+        const desc     = document.getElementById('exp-desc').value;
+        const amount   = parseFloat(document.getElementById('exp-amount').value);
+        const pagato_da = document.getElementById('exp-payer').value;
+        expenses.push({ id: Date.now(), desc, amount, pagato_da, date: new Date().toLocaleDateString('it-IT') });
+        save();
+        this.reset();
+        renderSaldo();
+        renderExpenses();
+        notify('💰 Spesa aggiunta!');
+    };
+
+    function renderExpenses() {
+        const list = document.getElementById('expenses-list');
+
+        // Merge expenses + versamenti in cronological order (most recent first)
+        const items = [
+            ...expenses.map(e => ({ ...e, tipo: 'spesa' })),
+            ...versamenti.map(v => ({ ...v, tipo: 'versamento' })),
+        ].sort((a, b) => b.id - a.id);
+
+        if (items.length === 0) {
+            list.innerHTML = '<p style="color:#94a3b8; text-align:center; padding:1rem;">Niente ancora — chi paga il primo pieno? 😄</p>';
+            return;
+        }
+
+        const payerColor = { Fabiano: '#2563eb', Salvatore: '#7c3aed', Entrambi: '#059669' };
+        const payerLabel = { Fabiano: 'Fab', Salvatore: 'Sal', Entrambi: '½+½' };
+
+        list.innerHTML = items.map(item => {
+            if (item.tipo === 'versamento') {
+                return `
+                <div style="display:flex; justify-content:space-between; align-items:center; padding:1rem 0; border-bottom:1px solid #eee;">
+                    <div style="display:flex; align-items:center; gap:0.75rem;">
+                        <span style="font-size:1.3rem;">💸</span>
+                        <div>
+                            <div style="font-weight:700; color:#059669;">${item.da} → ${item.a}</div>
+                            <div style="font-size:0.8rem; color:#64748b;">${item.date}${item.note ? ' · ' + item.note : ''}</div>
+                        </div>
+                    </div>
+                    <div style="font-weight:800; color:#059669;">+€${item.amount.toFixed(2)}</div>
+                </div>`;
+            }
+            const payer = item.pagato_da || 'Entrambi';
+            const color = payerColor[payer] || '#64748b';
+            const label = payerLabel[payer] || payer;
+            return `
+            <div style="display:flex; justify-content:space-between; align-items:center; padding:1rem 0; border-bottom:1px solid #eee;">
+                <div style="display:flex; align-items:center; gap:0.75rem;">
+                    <span style="background:${color}; color:white; font-size:0.7rem; font-weight:800; padding:0.2rem 0.45rem; border-radius:6px;">${label}</span>
+                    <div>
+                        <div style="font-weight:700;">${item.desc}</div>
+                        <div style="font-size:0.8rem; color:#64748b;">${item.date}</div>
+                    </div>
+                </div>
+                <div style="font-weight:800; color:var(--error-color);">-€${item.amount.toFixed(2)}</div>
+            </div>`;
+        }).join('');
+    }
+
+    // --- CALENDAR ---
     function renderCalendar() {
         const container = document.getElementById('calendar-container');
         container.innerHTML = '';
         const now = new Date();
         for (let i = 0; i < 3; i++) {
-            const date = new Date(now.getFullYear(), now.getMonth() + i, 1);
-            container.appendChild(createMonthElement(date));
+            container.appendChild(createMonthElement(new Date(now.getFullYear(), now.getMonth() + i, 1)));
         }
     }
 
     function createMonthElement(date) {
         const wrapper = document.createElement('div');
         wrapper.className = 'month-view';
-        const monthName = new Intl.DateTimeFormat('it-IT', { month: 'long', year: 'numeric' }).format(date);
+        const monthName = new Intl.DateTimeFormat('it-IT', { month:'long', year:'numeric' }).format(date);
         wrapper.innerHTML = `<div class="month-title">${monthName}</div>`;
         const grid = document.createElement('div');
         grid.className = 'calendar-grid';
-        ['L','M','M','G','V','S','D'].forEach(d => {
-            grid.innerHTML += `<div class="day-head">${d}</div>`;
-        });
-        const year = date.getFullYear();
-        const month = date.getMonth();
+        ['L','M','M','G','V','S','D'].forEach(d => { grid.innerHTML += `<div class="day-head">${d}</div>`; });
+        const year = date.getFullYear(), month = date.getMonth();
         let firstDay = new Date(year, month, 1).getDay();
         firstDay = firstDay === 0 ? 6 : firstDay - 1;
         const daysInMonth = new Date(year, month + 1, 0).getDate();
         for (let i = 0; i < firstDay; i++) grid.innerHTML += `<div class="day empty"></div>`;
         const todayStr = new Date().toISOString().split('T')[0];
         for (let d = 1; d <= daysInMonth; d++) {
-            const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+            const dateStr = `${year}-${String(month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
             const booking = bookings.find(b => dateStr >= b.startDate && dateStr <= b.endDate);
             const dayEl = document.createElement('div');
             dayEl.className = 'day';
@@ -470,22 +600,16 @@
         return wrapper;
     }
 
+    // --- SELECTION ---
     function handleDayClick(date) {
         if (!tempStart || (tempStart && tempEnd)) {
-            tempStart = date;
-            tempEnd = null;
-            notify("📍 Inizio: " + formatDate(date) + " — ora tocca il giorno in cui la riporti!");
+            tempStart = date; tempEnd = null;
+            notify('📍 Inizio: ' + formatDate(date) + ' — ora tocca il giorno in cui la riporti!');
         } else {
-            if (date < tempStart) {
-                tempStart = date;
-                notify("📍 Ok, parto prima: " + formatDate(date));
-            } else {
-                if (isRangeOccupied(tempStart, date)) {
-                    notify("😬 Quei giorni sono già occupati!");
-                    return;
-                }
-                tempEnd = date;
-                notify("👍 Perfetto! Ora conferma.");
+            if (date < tempStart) { tempStart = date; notify('📍 Ok, parto prima: ' + formatDate(date)); }
+            else {
+                if (isRangeOccupied(tempStart, date)) { notify('😬 Quei giorni sono già occupati!'); return; }
+                tempEnd = date; notify('👍 Perfetto! Ora conferma.');
             }
         }
         updateSelectionUI();
@@ -501,9 +625,9 @@
         const info = document.getElementById('sel-info');
         allDays.forEach(el => {
             const d = el.dataset.date;
-            el.classList.remove('selecting', 'selection-start', 'selection-end');
+            el.classList.remove('selecting','selection-start','selection-end');
             if (tempStart && d === tempStart) el.classList.add('selection-start');
-            if (tempEnd && d === tempEnd) el.classList.add('selection-end');
+            if (tempEnd   && d === tempEnd)   el.classList.add('selection-end');
             if (tempStart && tempEnd && d > tempStart && d < tempEnd) el.classList.add('selecting');
         });
         if (tempStart) {
@@ -516,51 +640,28 @@
         }
     }
 
-    function resetSelection() {
-        tempStart = null;
-        tempEnd = null;
-        updateSelectionUI();
-    }
+    function resetSelection() { tempStart = null; tempEnd = null; updateSelectionUI(); }
 
     function formatDate(iso) {
-        const d = new Date(iso);
-        return d.toLocaleDateString('it-IT', { day:'numeric', month:'short' });
+        return new Date(iso).toLocaleDateString('it-IT', { day:'numeric', month:'short' });
     }
 
+    // --- BOOKING ---
     function openBookingForm() {
-        if (!tempStart || !tempEnd) {
-            notify("⚠️ Tocca prima il giorno in cui la riporti!");
-            return;
-        }
+        if (!tempStart || !tempEnd) { notify('⚠️ Tocca prima il giorno in cui la riporti!'); return; }
         document.getElementById('booking-modal').style.display = 'flex';
     }
 
-    function closeModal() {
-        document.getElementById('booking-modal').style.display = 'none';
-    }
+    function closeModal() { document.getElementById('booking-modal').style.display = 'none'; }
 
     function saveBooking() {
         const user = document.getElementById('book-user').value;
         const note = document.getElementById('book-note').value;
         const insieme = user === 'Insieme';
-        bookings.push({
-            id: Date.now(),
-            startDate: tempStart,
-            endDate: tempEnd,
-            user: user,
-            note: note,
-            approved: insieme
-        });
-        save();
-        closeModal();
-        resetSelection();
-        renderCalendar();
-        if (insieme) {
-            notify("✅ Uscita di coppia! Già confermata 👬");
-        } else {
-            const altro = user === 'Fabiano' ? 'Salvatore' : 'Fabiano';
-            notify(`📩 Richiesta mandata! Aspetta che ${altro} confermi.`);
-        }
+        bookings.push({ id: Date.now(), startDate: tempStart, endDate: tempEnd, user, note, approved: insieme });
+        save(); closeModal(); resetSelection(); renderCalendar(); renderStats();
+        if (insieme) notify('✅ Uscita di coppia! Già confermata 👬');
+        else notify(`📩 Richiesta mandata! Aspetta che ${user === 'Fabiano' ? 'Salvatore' : 'Fabiano'} confermi.`);
     }
 
     function handleBookingClick(booking) {
@@ -568,63 +669,58 @@
             const altro = booking.user === 'Fabiano' ? 'Salvatore' : 'Fabiano';
             const dove = booking.note ? ` — ${booking.note}` : '';
             if (confirm(`${booking.user} vuole la macchina dal ${formatDate(booking.startDate)} al ${formatDate(booking.endDate)}${dove}.\n\nSei ${altro}? Confermi?`)) {
-                booking.approved = true;
-                save();
-                renderCalendar();
+                booking.approved = true; save(); renderCalendar(); renderStats();
                 notify(`✅ ${altro} ha confermato! La macchina è di ${booking.user}.`);
             }
         } else {
-            const msg = booking.note
-                ? `🚗 ${booking.user} ha la macchina — ${booking.note}`
-                : `🚗 La macchina è di ${booking.user} questi giorni`;
-            notify(msg);
+            notify(booking.note ? `🚗 ${booking.user} ha la macchina — ${booking.note}` : `🚗 La macchina è di ${booking.user} questi giorni`);
         }
     }
 
-    document.getElementById('exp-form').onsubmit = function(e) {
-        e.preventDefault();
-        const d = document.getElementById('exp-desc').value;
-        const a = parseFloat(document.getElementById('exp-amount').value);
-        expenses.push({ id: Date.now(), desc: d, amount: a, date: new Date().toLocaleDateString('it-IT') });
-        save();
-        this.reset();
-        renderExpenses();
-        notify("💰 Spesa aggiunta! Saldatevi quando volete 😄");
-    };
+    // --- STATS ---
+    function calcDays(start, end) {
+        return Math.round((new Date(end) - new Date(start)) / 86400000) + 1;
+    }
 
-    function renderExpenses() {
-        const list = document.getElementById('expenses-list');
-        if (expenses.length === 0) {
-            list.innerHTML = '<p style="color:#94a3b8; text-align:center; padding:1rem;">Niente ancora — chi paga il primo pieno? 😄</p>';
-            return;
-        }
-        list.innerHTML = '';
-        expenses.slice().reverse().forEach(ex => {
-            list.innerHTML += `
-                <div style="display:flex; justify-content:space-between; padding: 1rem 0; border-bottom: 1px solid #eee;">
-                    <div>
-                        <div style="font-weight:700">${ex.desc}</div>
-                        <div style="font-size:0.8rem; color:#64748b">${ex.date}</div>
-                    </div>
-                    <div style="font-weight:800; color:var(--error-color)">€${ex.amount.toFixed(2)}</div>
+    function renderStats() {
+        const stats = { Fabiano:0, Salvatore:0, Insieme:0 };
+        bookings.filter(b => b.approved).forEach(b => { if (stats[b.user] !== undefined) stats[b.user] += calcDays(b.startDate, b.endDate); });
+        const total = stats.Fabiano + stats.Salvatore + stats.Insieme;
+        const colors = { Fabiano:'#2563eb', Salvatore:'#7c3aed', Insieme:'#059669' };
+        const emoji  = { Fabiano:'👤', Salvatore:'👤', Insieme:'👬' };
+        const container = document.getElementById('stats-container');
+        if (!container) return;
+        if (total === 0) { container.innerHTML = '<p style="color:#94a3b8; text-align:center;">Ancora nessun dato!</p>'; return; }
+        container.innerHTML = Object.entries(stats).map(([name, days]) => {
+            const pct = Math.round(days / total * 100);
+            return `<div style="margin-bottom:1.2rem;">
+                <div style="display:flex; justify-content:space-between; margin-bottom:0.4rem;">
+                    <span style="font-weight:700;">${emoji[name]} ${name}</span>
+                    <span style="font-weight:800; color:${colors[name]};">${days} giorni (${pct}%)</span>
                 </div>
-            `;
-        });
+                <div style="background:#e2e8f0; border-radius:50px; height:12px; overflow:hidden;">
+                    <div style="width:${pct}%; height:100%; background:${colors[name]}; border-radius:50px; transition:width 0.6s ease;"></div>
+                </div>
+            </div>`;
+        }).join('') + `<p style="font-size:0.85rem; color:#94a3b8; margin-top:0.5rem; text-align:right;">Totale: <strong>${total} giorni</strong> dall'1 gen 2026</p>`;
     }
 
+    // --- DOWNLOAD ---
     function downloadApp() {
-        const html = document.documentElement.outerHTML;
-        const blob = new Blob([html], { type: 'text/html' });
+        const blob = new Blob([document.documentElement.outerHTML], { type:'text/html' });
         const a = document.createElement('a');
         a.href = URL.createObjectURL(blob);
         a.download = 'la-nostra-macchina.html';
         a.click();
         URL.revokeObjectURL(a.href);
-        notify("⬇️ Eccola! Aprila nel browser e via.");
+        notify('⬇️ Eccola! Aprila nel browser e via.');
     }
 
+    // --- INIT ---
     renderCalendar();
     renderStats();
+    renderSaldo();
+    renderExpenses();
 </script>
 
 </body>
