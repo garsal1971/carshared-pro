@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CarShared Pro - Gestione Smart Auto</title>
+    <title>La Nostra Macchina 🚗</title>
     <style>
         :root {
             --primary-color: #2563eb;
@@ -15,8 +15,8 @@
             --border-color: #e2e8f0;
             --success-color: #10b981;
             --error-color: #ef4444;
-            --pending-color: #f59e0b; /* Arancio per non approvato */
-            --approved-color: #2563eb; /* Blu per approvato */
+            --pending-color: #f59e0b;
+            --approved-color: #2563eb;
             --selection-color: #dbeafe;
         }
 
@@ -88,7 +88,6 @@
 
         h2 { margin-bottom: 1.5rem; color: var(--text-color); font-size: 1.25rem; }
 
-        /* Multi-month Calendar */
         .months-container {
             display: flex;
             flex-direction: column;
@@ -143,27 +142,22 @@
         }
 
         .day.empty { visibility: hidden; pointer-events: none; }
-        
         .day:hover:not(.booked):not(.selecting) { background: #f8fafc; }
-
         .day.today { border: 2px solid var(--primary-color); color: var(--primary-color); }
 
-        /* Booking States */
         .day.booked-pending { background-color: #fef3c7; border-color: #f59e0b; color: #92400e; }
         .day.booked-approved { background-color: #dbeafe; border-color: #3b82f6; color: #1e40af; }
 
-        /* Selection States */
         .day.selecting { background-color: var(--selection-color); border-color: var(--primary-color); }
-        .day.selection-start, .day.selection-end { 
-            background-color: var(--primary-color) !important; 
-            color: white !important; 
+        .day.selection-start, .day.selection-end {
+            background-color: var(--primary-color) !important;
+            color: white !important;
             z-index: 2;
         }
 
         .day-num { font-size: 1rem; }
         .day-info { font-size: 0.6rem; opacity: 0.8; text-align: center; }
 
-        /* Legend */
         .legend {
             display: flex;
             gap: 1.5rem;
@@ -174,7 +168,6 @@
         .legend-item { display: flex; align-items: center; gap: 0.5rem; }
         .dot { width: 12px; height: 12px; border-radius: 3px; }
 
-        /* Expenses Styling (simplified but clean) */
         .expense-form-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -206,7 +199,6 @@
         .btn-primary { background: var(--primary-color); color: white; }
         .btn-primary:active { transform: scale(0.98); }
 
-        /* Notifications */
         #notif-box {
             position: fixed;
             top: 1.5rem;
@@ -231,7 +223,6 @@
             to { transform: translateY(0); opacity: 1; }
         }
 
-        /* Responsive refinements */
         @media (max-width: 480px) {
             .day-num { font-size: 0.9rem; }
             .day-head { font-size: 0.65rem; }
@@ -241,29 +232,27 @@
 <body>
 
 <header>
-    <h1>🚗 CarShared Pro</h1>
-    <p>Tocca i giorni per prenotare</p>
+    <h1>🚗 La Nostra Macchina</h1>
+    <p>Fabiano & Salvatore — chi la prende oggi?</p>
     <button onclick="downloadApp()" style="margin-top:1rem; padding:0.6rem 1.4rem; background:white; color:#2563eb; border:none; border-radius:50px; font-weight:700; font-size:0.9rem; cursor:pointer; box-shadow:0 2px 8px rgba(0,0,0,0.15);">
         ⬇️ Scarica App
     </button>
 </header>
 
 <nav>
-    <button id="nav-cal" class="active" onclick="switchTab('calendar')">Prenotazioni</button>
-    <button id="nav-exp" onclick="switchTab('expenses')">Spese</button>
+    <button id="nav-cal" class="active" onclick="switchTab('calendar')">📅 Quando la uso</button>
+    <button id="nav-exp" onclick="switchTab('expenses')">💸 Le nostre spese</button>
 </nav>
 
 <main>
     <!-- TAB CALENDARIO -->
     <section id="tab-calendar" class="tab-content active">
         <div class="card">
-            <div id="calendar-container" class="months-container">
-                <!-- Rendered by JS -->
-            </div>
-            
+            <div id="calendar-container" class="months-container"></div>
+
             <div class="legend">
-                <div class="legend-item"><div class="dot" style="background: #2563eb;"></div> Approvato</div>
-                <div class="legend-item"><div class="dot" style="background: #f59e0b;"></div> In Attesa</div>
+                <div class="legend-item"><div class="dot" style="background: #2563eb;"></div> Confermato</div>
+                <div class="legend-item"><div class="dot" style="background: #f59e0b;"></div> Da confermare</div>
                 <div class="legend-item"><div class="dot" style="border: 2px solid #2563eb;"></div> Oggi</div>
             </div>
         </div>
@@ -271,11 +260,11 @@
         <div id="selection-bar" class="card" style="display: none; position: sticky; bottom: 1rem; z-index: 90; border: 2px solid var(--primary-color);">
             <div style="display: flex; justify-content: space-between; align-items: center; gap: 1rem;">
                 <div>
-                    <span id="sel-info" style="font-weight: 800; font-size: 0.9rem;">Seleziona periodo...</span>
+                    <span id="sel-info" style="font-weight: 800; font-size: 0.9rem;">Scegli i giorni...</span>
                 </div>
                 <div style="display: flex; gap: 0.5rem;">
-                    <button class="btn" style="background: #e2e8f0; width: auto; padding: 0.6rem 1rem;" onclick="resetSelection()">Annulla</button>
-                    <button class="btn btn-primary" style="width: auto; padding: 0.6rem 1rem;" onclick="openBookingForm()">Prenota</button>
+                    <button class="btn" style="background: #e2e8f0; width: auto; padding: 0.6rem 1rem;" onclick="resetSelection()">Lascia perdere</button>
+                    <button class="btn btn-primary" style="width: auto; padding: 0.6rem 1rem;" onclick="openBookingForm()">Prendo io! 🙋</button>
                 </div>
             </div>
         </div>
@@ -284,27 +273,25 @@
     <!-- TAB SPESE -->
     <section id="tab-expenses" class="tab-content">
         <div class="card">
-            <h2>Nuova Spesa</h2>
+            <h2>Aggiungi una spesa</h2>
             <form id="exp-form">
                 <div class="expense-form-grid">
                     <div class="form-group">
-                        <label>Cosa hai comprato?</label>
-                        <input type="text" id="exp-desc" placeholder="es. Pieno Benzina" required>
+                        <label>Cosa hai pagato?</label>
+                        <input type="text" id="exp-desc" placeholder="es. Pieno benzina, bollo..." required>
                     </div>
                     <div class="form-group">
-                        <label>Quanto hai speso (€)?</label>
+                        <label>Quanto hai tirato fuori (€)?</label>
                         <input type="number" id="exp-amount" step="0.01" required>
                     </div>
                 </div>
-                <button type="submit" class="btn btn-primary">Salva Spesa</button>
+                <button type="submit" class="btn btn-primary">Ho pagato io 💳</button>
             </form>
         </div>
 
         <div class="card">
-            <h2>Ultime Spese</h2>
-            <div id="expenses-list">
-                <!-- JS -->
-            </div>
+            <h2>Quello che abbiamo speso</h2>
+            <div id="expenses-list"></div>
         </div>
     </section>
 </main>
@@ -312,22 +299,22 @@
 <!-- MODAL PRENOTAZIONE -->
 <div id="booking-modal" style="display: none; position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); z-index:200; align-items:center; justify-content:center;">
     <div class="card" style="width: 90%; max-width: 400px; margin: 0;">
-        <h2 id="modal-title">Conferma Prenotazione</h2>
+        <h2 id="modal-title">Chi la prende? 🚗</h2>
         <div class="form-group">
-            <label>Chi prenota?</label>
+            <label>Sono io oppure...</label>
             <select id="book-user">
-                <option value="Luca">Luca</option>
-                <option value="Sara">Sara</option>
-                <option value="Marco">Marco</option>
+                <option value="Fabiano">Fabiano</option>
+                <option value="Salvatore">Salvatore</option>
+                <option value="Insieme">Insieme 👬</option>
             </select>
         </div>
         <div class="form-group">
-            <label>Note</label>
-            <input type="text" id="book-note" placeholder="es. Viaggio lavoro">
+            <label>Dove vai? (facoltativo)</label>
+            <input type="text" id="book-note" placeholder="es. Al mare, dal medico, giro commissioni...">
         </div>
         <div style="display: flex; gap: 1rem;">
-            <button class="btn" style="background: #e2e8f0;" onclick="closeModal()">Esci</button>
-            <button class="btn btn-primary" onclick="saveBooking()">Conferma</button>
+            <button class="btn" style="background: #e2e8f0;" onclick="closeModal()">Torno indietro</button>
+            <button class="btn btn-primary" onclick="saveBooking()">Prenoto! ✅</button>
         </div>
     </div>
 </div>
@@ -335,13 +322,11 @@
 <div id="notif-box"></div>
 
 <script>
-    // --- STATE ---
     let bookings = JSON.parse(localStorage.getItem('cs_bookings')) || [];
     let expenses = JSON.parse(localStorage.getItem('cs_expenses')) || [];
     let tempStart = null;
     let tempEnd = null;
 
-    // --- UTILS ---
     const save = () => {
         localStorage.setItem('cs_bookings', JSON.stringify(bookings));
         localStorage.setItem('cs_expenses', JSON.stringify(expenses));
@@ -356,7 +341,6 @@
         setTimeout(() => t.remove(), 2500);
     }
 
-    // --- TAB SYSTEM ---
     function switchTab(tab) {
         document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
         document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
@@ -366,11 +350,9 @@
         else renderExpenses();
     }
 
-    // --- CALENDAR ENGINE ---
     function renderCalendar() {
         const container = document.getElementById('calendar-container');
         container.innerHTML = '';
-        
         const now = new Date();
         for (let i = 0; i < 3; i++) {
             const date = new Date(now.getFullYear(), now.getMonth() + i, 1);
@@ -381,35 +363,26 @@
     function createMonthElement(date) {
         const wrapper = document.createElement('div');
         wrapper.className = 'month-view';
-        
         const monthName = new Intl.DateTimeFormat('it-IT', { month: 'long', year: 'numeric' }).format(date);
         wrapper.innerHTML = `<div class="month-title">${monthName}</div>`;
-        
         const grid = document.createElement('div');
         grid.className = 'calendar-grid';
-        
         ['L','M','M','G','V','S','D'].forEach(d => {
             grid.innerHTML += `<div class="day-head">${d}</div>`;
         });
-
         const year = date.getFullYear();
         const month = date.getMonth();
         let firstDay = new Date(year, month, 1).getDay();
         firstDay = firstDay === 0 ? 6 : firstDay - 1;
         const daysInMonth = new Date(year, month + 1, 0).getDate();
-
         for (let i = 0; i < firstDay; i++) grid.innerHTML += `<div class="day empty"></div>`;
-
         const todayStr = new Date().toISOString().split('T')[0];
-
         for (let d = 1; d <= daysInMonth; d++) {
             const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
             const booking = bookings.find(b => dateStr >= b.startDate && dateStr <= b.endDate);
-            
             const dayEl = document.createElement('div');
             dayEl.className = 'day';
             dayEl.dataset.date = dateStr;
-            
             if (dateStr === todayStr) dayEl.classList.add('today');
             if (booking) {
                 dayEl.classList.add(booking.approved ? 'booked-approved' : 'booked-pending');
@@ -419,32 +392,28 @@
                 dayEl.innerHTML = `<span class="day-num">${d}</span>`;
                 dayEl.onclick = () => handleDayClick(dateStr);
             }
-            
             grid.appendChild(dayEl);
         }
-        
         wrapper.appendChild(grid);
         return wrapper;
     }
 
-    // --- SMART SELECTION LOGIC ---
     function handleDayClick(date) {
         if (!tempStart || (tempStart && tempEnd)) {
             tempStart = date;
             tempEnd = null;
-            notify("📍 Inizio: " + formatDate(date) + ". Ora tocca la fine.");
+            notify("📍 Inizio: " + formatDate(date) + " — ora tocca il giorno in cui la riporti!");
         } else {
             if (date < tempStart) {
                 tempStart = date;
-                notify("📍 Data inizio spostata a: " + formatDate(date));
+                notify("📍 Ok, parto prima: " + formatDate(date));
             } else {
-                // Controllo se ci sono prenotazioni nel mezzo
                 if (isRangeOccupied(tempStart, date)) {
-                    notify("❌ Periodo non disponibile (ci sono altre prenotazioni)");
+                    notify("😬 Quei giorni sono già occupati!");
                     return;
                 }
                 tempEnd = date;
-                notify("✅ Periodo selezionato. Conferma ora.");
+                notify("👍 Perfetto! Ora conferma.");
             }
         }
         updateSelectionUI();
@@ -458,21 +427,18 @@
         const allDays = document.querySelectorAll('.day:not(.empty)');
         const bar = document.getElementById('selection-bar');
         const info = document.getElementById('sel-info');
-
         allDays.forEach(el => {
             const d = el.dataset.date;
             el.classList.remove('selecting', 'selection-start', 'selection-end');
-            
             if (tempStart && d === tempStart) el.classList.add('selection-start');
             if (tempEnd && d === tempEnd) el.classList.add('selection-end');
             if (tempStart && tempEnd && d > tempStart && d < tempEnd) el.classList.add('selecting');
         });
-
         if (tempStart) {
             bar.style.display = 'block';
-            info.innerText = tempEnd 
+            info.innerText = tempEnd
                 ? `${formatDate(tempStart)} ➔ ${formatDate(tempEnd)}`
-                : `Inizio: ${formatDate(tempStart)}...`;
+                : `Dal ${formatDate(tempStart)}... fino a quando?`;
         } else {
             bar.style.display = 'none';
         }
@@ -489,10 +455,9 @@
         return d.toLocaleDateString('it-IT', { day:'numeric', month:'short' });
     }
 
-    // --- BOOKING WORKFLOW ---
     function openBookingForm() {
         if (!tempStart || !tempEnd) {
-            notify("⚠️ Seleziona prima una data di fine");
+            notify("⚠️ Tocca prima il giorno in cui la riporti!");
             return;
         }
         document.getElementById('booking-modal').style.display = 'flex';
@@ -505,37 +470,37 @@
     function saveBooking() {
         const user = document.getElementById('book-user').value;
         const note = document.getElementById('book-note').value;
-        
         bookings.push({
             id: Date.now(),
             startDate: tempStart,
             endDate: tempEnd,
             user: user,
             note: note,
-            approved: false // Default non approvato
+            approved: false
         });
-        
         save();
         closeModal();
         resetSelection();
         renderCalendar();
-        notify("📩 Richiesta inviata! In attesa di approvazione.");
+        notify("📩 Richiesta mandata! Aspetta che l'altro confermi.");
     }
 
     function handleBookingClick(booking) {
         if (!booking.approved) {
-            if (confirm(`Vuoi approvare la prenotazione di ${booking.user}?`)) {
+            if (confirm(`${booking.user} vuole la macchina dal ${formatDate(booking.startDate)} al ${formatDate(booking.endDate)}${booking.note ? ' — ' + booking.note : ''}.\n\nVai bene? Confermi?`)) {
                 booking.approved = true;
                 save();
                 renderCalendar();
-                notify("✅ Prenotazione approvata!");
+                notify("✅ Confermato! La macchina è sua.");
             }
         } else {
-            notify(`🚗 Auto prenotata da ${booking.user}`);
+            const msg = booking.note
+                ? `🚗 ${booking.user} ha la macchina — ${booking.note}`
+                : `🚗 La macchina è di ${booking.user} questi giorni`;
+            notify(msg);
         }
     }
 
-    // --- EXPENSES ---
     document.getElementById('exp-form').onsubmit = function(e) {
         e.preventDefault();
         const d = document.getElementById('exp-desc').value;
@@ -544,11 +509,15 @@
         save();
         this.reset();
         renderExpenses();
-        notify("💰 Spesa salvata!");
+        notify("💰 Spesa aggiunta! Saldatevi quando volete 😄");
     };
 
     function renderExpenses() {
         const list = document.getElementById('expenses-list');
+        if (expenses.length === 0) {
+            list.innerHTML = '<p style="color:#94a3b8; text-align:center; padding:1rem;">Niente ancora — chi paga il primo pieno? 😄</p>';
+            return;
+        }
         list.innerHTML = '';
         expenses.slice().reverse().forEach(ex => {
             list.innerHTML += `
@@ -568,13 +537,12 @@
         const blob = new Blob([html], { type: 'text/html' });
         const a = document.createElement('a');
         a.href = URL.createObjectURL(blob);
-        a.download = 'carshared-pro.html';
+        a.download = 'la-nostra-macchina.html';
         a.click();
         URL.revokeObjectURL(a.href);
-        notify("⬇️ Download avviato! Apri il file nel browser.");
+        notify("⬇️ Eccola! Aprila nel browser e via.");
     }
 
-    // INIT
     renderCalendar();
 </script>
 
