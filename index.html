@@ -243,6 +243,9 @@
 <header>
     <h1>🚗 CarShared Pro</h1>
     <p>Tocca i giorni per prenotare</p>
+    <button onclick="downloadApp()" style="margin-top:1rem; padding:0.6rem 1.4rem; background:white; color:#2563eb; border:none; border-radius:50px; font-weight:700; font-size:0.9rem; cursor:pointer; box-shadow:0 2px 8px rgba(0,0,0,0.15);">
+        ⬇️ Scarica App
+    </button>
 </header>
 
 <nav>
@@ -558,6 +561,17 @@
                 </div>
             `;
         });
+    }
+
+    function downloadApp() {
+        const html = document.documentElement.outerHTML;
+        const blob = new Blob([html], { type: 'text/html' });
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = 'carshared-pro.html';
+        a.click();
+        URL.revokeObjectURL(a.href);
+        notify("⬇️ Download avviato! Apri il file nel browser.");
     }
 
     // INIT
