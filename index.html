@@ -345,9 +345,27 @@
         { id:12,startDate:'2026-06-01', endDate:'2026-06-03', user:'Fabiano',   note:'Ponte della Repubblica',  approved:true },
     ];
 
+    const DEMO_EXPENSES = [
+        { id:101, desc:'Pieno benzina',            amount:65.00, date:'03/01/2026' },
+        { id:102, desc:'Autostrada A1',             amount:12.50, date:'10/01/2026' },
+        { id:103, desc:'Pieno benzina',            amount:61.20, date:'20/01/2026' },
+        { id:104, desc:'Cambio olio + filtri',      amount:89.00, date:'03/02/2026' },
+        { id:105, desc:'Pieno benzina',            amount:67.40, date:'08/02/2026' },
+        { id:106, desc:'Parcheggio aeroporto',      amount:28.00, date:'14/02/2026' },
+        { id:107, desc:'Pieno benzina',            amount:63.80, date:'07/03/2026' },
+        { id:108, desc:'Lavaggio auto',             amount:15.00, date:'21/03/2026' },
+        { id:109, desc:'Pieno benzina',            amount:70.00, date:'05/04/2026' },
+        { id:110, desc:'Pedaggi autostrada',        amount:18.60, date:'18/04/2026' },
+        { id:111, desc:'Pieno benzina',            amount:64.50, date:'02/05/2026' },
+        { id:112, desc:'Revisione annuale',         amount:55.00, date:'17/05/2026' },
+        { id:113, desc:'Pieno benzina',            amount:68.90, date:'01/06/2026' },
+        { id:114, desc:'Bollo auto',               amount:148.00, date:'10/06/2026' },
+    ];
+
     let bookings = JSON.parse(localStorage.getItem('cs_bookings'));
     if (!bookings) { bookings = DEMO_BOOKINGS; localStorage.setItem('cs_bookings', JSON.stringify(bookings)); }
-    let expenses = JSON.parse(localStorage.getItem('cs_expenses')) || [];
+    let expenses = JSON.parse(localStorage.getItem('cs_expenses'));
+    if (!expenses) { expenses = DEMO_EXPENSES; localStorage.setItem('cs_expenses', JSON.stringify(expenses)); }
     let tempStart = null;
     let tempEnd = null;
 
