@@ -470,28 +470,36 @@
     function saveBooking() {
         const user = document.getElementById('book-user').value;
         const note = document.getElementById('book-note').value;
+        const insieme = user === 'Insieme';
         bookings.push({
             id: Date.now(),
             startDate: tempStart,
             endDate: tempEnd,
             user: user,
             note: note,
-            approved: false
+            approved: insieme
         });
         save();
         closeModal();
         resetSelection();
         renderCalendar();
-        notify("📩 Richiesta mandata! Aspetta che l'altro confermi.");
+        if (insieme) {
+            notify("✅ Uscita di coppia! Già confermata 👬");
+        } else {
+            const altro = user === 'Fabiano' ? 'Salvatore' : 'Fabiano';
+            notify(`📩 Richiesta mandata! Aspetta che ${altro} confermi.`);
+        }
     }
 
     function handleBookingClick(booking) {
         if (!booking.approved) {
-            if (confirm(`${booking.user} vuole la macchina dal ${formatDate(booking.startDate)} al ${formatDate(booking.endDate)}${booking.note ? ' — ' + booking.note : ''}.\n\nVai bene? Confermi?`)) {
+            const altro = booking.user === 'Fabiano' ? 'Salvatore' : 'Fabiano';
+            const dove = booking.note ? ` — ${booking.note}` : '';
+            if (confirm(`${booking.user} vuole la macchina dal ${formatDate(booking.startDate)} al ${formatDate(booking.endDate)}${dove}.\n\nSei ${altro}? Confermi?`)) {
                 booking.approved = true;
                 save();
                 renderCalendar();
-                notify("✅ Confermato! La macchina è sua.");
+                notify(`✅ ${altro} ha confermato! La macchina è di ${booking.user}.`);
             }
         } else {
             const msg = booking.note
